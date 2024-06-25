@@ -1,12 +1,11 @@
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
+import { BarcodeScanner } from 'react-barcode-scanner';
 
-export default function Form({ onFormChange, onChange }) {
+export default function Form({ isOpen, onToggle, name, setName, validade, setValidade, quantidade, setQuantidade, brand, setBrand, codigo, setCodigo, isScanning, setIsScanning, handleScan }) {
 
 
 return (
-      <Dialog className="relative z-10" open={onFormChange} onClose={onChange}>
+      <Dialog className="relative z-10" open={isOpen} onClose={onToggle}>
       <DialogBackdrop
          transition
          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
@@ -29,16 +28,18 @@ return (
 
                      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-4">
-                        <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
+                        <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
                            Nome
                         </label>
                         <div className="mt-2">
                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                               <input
                               type="text"
-                              name="username"
-                              id="username"
-                              autoComplete="username"
+                              name="name"
+                              id="name"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              autoComplete="name"
                               className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                               placeholder="Farinha de trigo"
                               />
@@ -47,17 +48,55 @@ return (
                         </div>
 
                         <div className="col-span-full">
-                           <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
-                              Quantidade
+                           <label htmlFor="date" className="block text-sm font-medium leading-6 text-gray-900">
+                              Data de validade
+                           </label>
+                        <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                              <input
+                              type="date"
+                              name="date"
+                              id="date"
+                              value={validade}
+                              onChange={(e) => setValidade(e.target.value)}
+                              autoComplete="date"
+                              className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                              placeholder="Farinha de trigo"
+                              />
+                           </div>
+                        </div>
+
+                        <div className="col-span-full">
+                           <label htmlFor="brand" className="block text-sm font-medium leading-6 text-gray-900">
+                              Marca
                            </label>
                         <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                               <input
                               type="text"
-                              name="username"
-                              id="username"
-                              autoComplete="username"
+                              name="brand"
+                              id="brand"
+                              value={brand}
+                              onChange={(e) => setBrand(e.target.value)}
+                              autoComplete="brand"
                               className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                              placeholder="Farinha de trigo"
+                              placeholder="Nova Holanda"
+                              />
+                           </div>
+                        </div>
+
+                        <div className="col-span-full">
+                           <label htmlFor="quantidade" className="block text-sm font-medium leading-6 text-gray-900">
+                              Quantidade
+                           </label>
+                        <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                              <input
+                              type="number"
+                              name="quantidade"
+                              id="quantidade"
+                              value={quantidade}
+                              onChange={(e) => setQuantidade(e.target.value)}
+                              autoComplete="quantidade"
+                              className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                              placeholder="0"
                               />
                            </div>
                         </div>
@@ -69,18 +108,29 @@ return (
                            <div className="mt-2 flex items-center gap-x-3">
                               <button
                                  type="button"
+                                 onClick={() => setIsScanning(true)}
                                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                                  Adicionar
                               </button>
+                              {/* //TODO - Talvez fazer um modal separado para abrir a camera e escanear, porque abrir em uma div está estranho e pequeno */}
+                              {isScanning && (
+                                 <BarcodeScanner 
+                                    width={500}
+                                    height={500}
+                                    onCapture={handleScan}
+                                 />
+                              )}
                            </div>
                            <div className="mt-2">
-                              <p className="mt-1 text-sm leading-6 text-gray-600">Ou adicione manualmente</p>
+                              <label htmlFor="bar-code" className="mt-1 text-sm leading-6 text-gray-600">Ou adicione manualmente</label>
                               <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                                  <input
-                                 type="text"
-                                 name="username"
-                                 id="username"
-                                 autoComplete="username"
+                                 type="number"
+                                 name="bar-code"
+                                 id="bar-code"
+                                 value={codigo}
+                                 onChange={(e) => setCodigo(e.target.value)}
+                                 autoComplete="bar-code"
                                  className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                                  placeholder="1002934857383"
                                  />
@@ -95,8 +145,8 @@ return (
                      <div className="mt-10 space-y-10">
                         
                         <fieldset>
-                        <legend className="text-sm font-semibold leading-6 text-gray-900">Push Notifications</legend>
-                        <p className="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
+                        <legend className="text-sm font-semibold leading-6 text-gray-900">Notificações</legend>
+                        <p className="mt-1 text-sm leading-6 text-gray-600">Notificações enviadas por email para seu celular/barra de notificações</p>
                         <div className="mt-6 space-y-6">
                            <div className="flex items-center gap-x-3">
                               <input
@@ -106,8 +156,9 @@ return (
                               className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                               />
                               <label htmlFor="push-everything" className="block text-sm font-medium leading-6 text-gray-900">
-                              Everything
+                              Tudo
                               </label>
+                              <p className="mt-1 text-xs leading-6 text-gray-600">Notificações sobre produtos próximos da validade, adições, remoções, estoque baixo etc...</p>
                            </div>
                            <div className="flex items-center gap-x-3">
                               <input
@@ -117,7 +168,7 @@ return (
                               className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                               />
                               <label htmlFor="push-email" className="block text-sm font-medium leading-6 text-gray-900">
-                              Same as email
+                              Somente validade próxima de vencimento
                               </label>
                            </div>
                            <div className="flex items-center gap-x-3">
@@ -128,7 +179,7 @@ return (
                               className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                               />
                               <label htmlFor="push-nothing" className="block text-sm font-medium leading-6 text-gray-900">
-                              No push notifications
+                              Sem notificações
                               </label>
                            </div>
                         </div>

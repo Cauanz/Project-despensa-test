@@ -5,10 +5,10 @@ export default function NavBar({ onButtonClick }) {
    return (
       <nav>
          <ul>
-            <li><Link to="/">Home</Link></li>
-            <li onClick={onButtonClick} >Adicionar Item</li>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/">Alerta</Link></li>
+            <li className="cursor-pointer"><Link to="/">Home</Link></li>
+            <li onClick={onButtonClick}  className="cursor-pointer">Adicionar Item</li>
+            <li className="cursor-pointer"><Link to="/">Home</Link></li>
+            <li className="cursor-pointer"><Link to="/">Alerta</Link></li>
          </ul>
       </nav>
    )
