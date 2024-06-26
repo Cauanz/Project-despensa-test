@@ -1,11 +1,12 @@
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
+/* eslint-disable react/prop-types */
+import "./Form.css";
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { BarcodeScanner } from 'react-barcode-scanner';
 
 export default function Form({ isOpen, onToggle, name, setName, validade, setValidade, quantidade, setQuantidade, brand, setBrand, codigo, setCodigo, isScanning, setIsScanning, handleScan }) {
 
-
 return (
-      <Dialog className="relative z-10" open={isOpen} onClose={onToggle}>
+      <Dialog className="relative z-10" open={isOpen} onClose={() => onToggle(true)}>
       <DialogBackdrop
          transition
          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
@@ -105,21 +106,28 @@ return (
                            <label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
                               Código de barras
                            </label>
-                           <div className="mt-2 flex items-center gap-x-3">
+                           <div className="mt-2 flex items-center gap-x-3 h-6">
                               <button
                                  type="button"
                                  onClick={() => setIsScanning(true)}
-                                 className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                 className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 absolute">
                                  Adicionar
                               </button>
-                              {/* //TODO - Talvez fazer um modal separado para abrir a camera e escanear, porque abrir em uma div está estranho e pequeno */}
+
                               {isScanning && (
-                                 <BarcodeScanner 
-                                    width={500}
-                                    height={500}
-                                    onCapture={handleScan}
-                                 />
+                                 <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50" onClick={() => setIsScanning(false)}>
+                                    <div className="modal h-96 w-96 overflow-auto">
+                                       <div className="item flex justify-center items-center h-full">
+                                          <BarcodeScanner 
+                                             width={300}
+                                             height={300}
+                                             onCapture={handleScan}
+                                          />
+                                       </div>
+                                    </div>
+                              </div>
                               )}
+
                            </div>
                            <div className="mt-2">
                               <label htmlFor="bar-code" className="mt-1 text-sm leading-6 text-gray-600">Ou adicione manualmente</label>
@@ -189,7 +197,7 @@ return (
                   </div>
 
                   <div className="mt-6 flex items-center justify-end gap-x-6">
-                  <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
+                  <button type="button" className="text-sm font-semibold leading-6 text-gray-900" onClick={() => onToggle(false)}>
                      Cancel
                   </button>
                   <button

@@ -5,7 +5,7 @@ import Form from './components/Form';
 
 function App() {
 
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const [name, setName] = useState('');
   const [marca, setMarca] = useState('');
