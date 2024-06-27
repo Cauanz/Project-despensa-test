@@ -3,7 +3,7 @@ import "./Form.css";
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { BarcodeScanner } from 'react-barcode-scanner';
 
-export default function Form({ isOpen, onToggle, name, setName, validade, setValidade, quantidade, setQuantidade, brand, setBrand, codigo, setCodigo, isScanning, setIsScanning, handleScan }) {
+export default function Form({ isOpen, onToggle, name, setName, validade, setValidade, quantidade, setQuantidade, brand, setBrand, codigo, setCodigo, isScanning, setIsScanning, handleScan, handleFetch }) {
 
 return (
       <Dialog className="relative z-10" open={isOpen} onClose={() => onToggle(true)}>
@@ -109,20 +109,28 @@ return (
                            <div className="mt-2 flex items-center gap-x-3 h-6">
                               <button
                                  type="button"
+                                 disabled={true} //TEMPORARIO ATÉ ARRUMAR LEITORES DE CÓDIGO QUE FUNCIONEM
                                  onClick={() => setIsScanning(true)}
                                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 absolute">
                                  Adicionar
                               </button>
-
+      
                               {isScanning && (
                                  <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50" onClick={() => setIsScanning(false)}>
                                     <div className="modal h-96 w-96 overflow-auto">
                                        <div className="item flex justify-center items-center h-full">
-                                          <BarcodeScanner 
+
+                                          {/* //TODO - Leitores de código de barra usando a camera estão quebrados, nenhum que achei é facil de implementar ou não vale a pena tentar */}
+
+                                          {/* //* por enquanto somente por entrada manual */}
+
+                                          {/* <BarcodeScanner 
                                              width={300}
                                              height={300}
-                                             onCapture={handleScan}
-                                          />
+                                             value={codigo}
+                                             onCapture={() => {handleScan(), setIsScanning(false)}}
+                                          /> */}
+
                                        </div>
                                     </div>
                               </div>
@@ -137,6 +145,7 @@ return (
                                  name="bar-code"
                                  id="bar-code"
                                  value={codigo}
+                                 onBlur={handleFetch}
                                  onChange={(e) => setCodigo(e.target.value)}
                                  autoComplete="bar-code"
                                  className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"

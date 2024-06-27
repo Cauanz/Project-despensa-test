@@ -17,15 +17,27 @@ function App() {
     setOpen(!open);
   }
 
-  function handleScan(err, result) {
-    console.log(err, result)
-  }
+  // function handleScan(err, result) {
+  //   console.log(err, result);
+  //   // setCodigo(result);
+  // }
 
+  async function fetchProduct() {
+    const url = `https://world.openfoodfacts.org/api/v0/product/${codigo}.json`;
+
+    try {
+      let response = await fetch(url);
+      let data = await response.json();
+      console.log(data.product);
+    } catch (error) {
+      console.error("Erro na requisição: ", error);
+    }
+  }
 
   return (
     <>
       <NavBar onButtonClick={toggleForm} />
-      <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleScan={handleScan}/>
+      <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleFetch={fetchProduct}/>
       <div className="list">
         <ul className="listItens">
         </ul>
