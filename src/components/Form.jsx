@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import "./Form.css";
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
-import { BarcodeScanner } from 'react-barcode-scanner';
+// import { BarcodeScanner } from 'react-barcode-scanner';
 
-export default function Form({ isOpen, onToggle, name, setName, validade, setValidade, quantidade, setQuantidade, brand, setBrand, codigo, setCodigo, isScanning, setIsScanning, handleScan, handleFetch }) {
+export default function Form({ isOpen, onToggle, name, setName, validade, setValidade, quantidade, setQuantidade, brand, setBrand, codigo, setCodigo, isScanning, setIsScanning, handleScan, handleFetch, handleData }) {
 
 return (
       <Dialog className="relative z-10" open={isOpen} onClose={() => onToggle(true)}>
@@ -157,7 +157,7 @@ return (
                      </div>
                   </div>
 
-                  <div className="border-b border-gray-900/10 pb-12">
+                  {/* <div className="border-b border-gray-900/10 pb-12">
 
                      <div className="mt-10 space-y-10">
                         
@@ -202,7 +202,7 @@ return (
                         </div>
                         </fieldset>
                      </div>
-                  </div>
+                  </div> */}
                   </div>
 
                   <div className="mt-6 flex items-center justify-end gap-x-6">
@@ -211,8 +211,7 @@ return (
                   </button>
                   <button
                      type="submit"
-                     className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
+                     className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" onClick={handleData}>
                      Save
                   </button>
                   </div>
