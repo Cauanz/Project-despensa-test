@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import NavBar from './components/NavBar'
 import Form from './components/Form';
-import { set } from 'firebase/database';
+import { Client } from "pg";
 
 function App() {
 
@@ -70,50 +70,55 @@ function App() {
   }
 
 
+  async function getProducts() {
+    // const API_KEY = '10c3c896-2294-4835-91e9-7f3225128ee8';
+    // const url = `https://getpantry.cloud/apiv1/pantry/${API_KEY}/basket/despensa`;
+
+    // let headers = new Headers();
+    // headers.append("Content-Type", "application/json");
+
+    // let request = {
+    //   method: 'GET',
+    //   headers: headers,
+    //   redirect: 'follow'
+    // };
+
+    // let response = await fetch(url, request);
+    // let data = await response.json();
+    // if (!response.ok) {
+    //   throw new Error('Erro na resposta do servidor: ' + response.statusText);
+    // }
+
+    // return data;
+  }
+
   async function fetchData(e) {
     e.preventDefault();
-    const API_KEY = '10c3c896-2294-4835-91e9-7f3225128ee8';
-    const url = `https://getpantry.cloud/apiv1/pantry/${API_KEY}/basket/despensa`;
 
+    // const API_KEY = '10c3c896-2294-4835-91e9-7f3225128ee8';
+    // const url = `https://getpantry.cloud/apiv1/pantry/${API_KEY}/basket/despensa`;
+    
+    // let headers = new Headers();
+    // headers.append("Content-Type", "application/json");
+        
+    // const item = {
+    //   "id": id,
+    //   "name": name,
+    //   "validade": validade,
+    //   "marca": marca,
+    //   "quantidade": quantidade,
+    //   "codigo": codigo
+    // };
 
     //! NADA DAQUI PARA BAIXO ESTÁ FUNCIONANDO, POR ALGUM MOTIVO, ERRO ADICIONAR, ITEMS NÃO É UM ARRAY, ETC...
-    try {
-      const items = await fetch(url).then(response => response.json());
-      console.log(items)
-      const itemExists = items.some(item => item.id === id);
-  
-      if(itemExists){
-        console.log('item já existe');
-        return;
-        //TODO - Fazer esse erro visual
-      } else {
-        items.push({
-          "id": id,
-          "name": name,
-          "validade": validade,
-          "marca": marca,
-          "quantidade": quantidade,
-          "codigo": codigo
-        });
+    //! NÃO DA PARA USAR O POSTGRE PORQUE ELE É EXECUTADO EM UM SERVER NODE
+    // try {
 
-        let headers = new Headers();
-        headers.append("Content-Type", "application/json");
-    
-        let requestOptions = {
-          method: 'PUT',
-          headers: headers,
-          body: JSON.stringify({ items }),
-          redirect: 'follow'
-        };
-  
-  
-        let updateResponse = await fetch(url, requestOptions)
-        let updateResult = await updateResponse.json();
-        console.log(updateResult);
-      }      
-    } catch (error) {
-      console.log("Houve um erro ao tentar adicionar o item ao banco de dados", error)
-    }
+
+      
+    // } catch (error) {
+    //   console.log("Houve um erro ao tentar adicionar o item ao banco de dados", error)
+    // }
   }
 
   return (
