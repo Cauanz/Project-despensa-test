@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import NavBar from './components/NavBar'
 import Form from './components/Form';
-import { Client } from "pg";
+import { db } from '../firebase';
+import { addDoc, collection, getDocs } from 'firebase/firestore';
 
 function App() {
 
@@ -17,6 +18,8 @@ function App() {
 
   const [id, setId] = useState('');
 
+  const [items, setItems] = useState([]);
+
   function toggleForm() {
     setOpen(!open);
     setName('');
@@ -24,6 +27,7 @@ function App() {
     setQuantidade('');
     setValidade('');
     setCodigo('');
+    setId('');
   }
 
   // function handleScan(err, result) {
@@ -69,57 +73,53 @@ function App() {
     }
   }
 
-
-  async function getProducts() {
-    // const API_KEY = '10c3c896-2294-4835-91e9-7f3225128ee8';
-    // const url = `https://getpantry.cloud/apiv1/pantry/${API_KEY}/basket/despensa`;
-
-    // let headers = new Headers();
-    // headers.append("Content-Type", "application/json");
-
-    // let request = {
-    //   method: 'GET',
-    //   headers: headers,
-    //   redirect: 'follow'
-    // };
-
-    // let response = await fetch(url, request);
-    // let data = await response.json();
-    // if (!response.ok) {
-    //   throw new Error('Erro na resposta do servidor: ' + response.statusText);
-    // }
-
-    // return data;
-  }
-
   async function fetchData(e) {
     e.preventDefault();
 
-    // const API_KEY = '10c3c896-2294-4835-91e9-7f3225128ee8';
-    // const url = `https://getpantry.cloud/apiv1/pantry/${API_KEY}/basket/despensa`;
+    const item = {
+      "id": id,
+      "name": name,
+      "validade": validade,
+      "marca": marca,
+      "quantidade": quantidade,
+      "codigo": codigo
+    };
     
-    // let headers = new Headers();
-    // headers.append("Content-Type", "application/json");
-        
-    // const item = {
-    //   "id": id,
-    //   "name": name,
-    //   "validade": validade,
-    //   "marca": marca,
-    //   "quantidade": quantidade,
-    //   "codigo": codigo
-    // };
+    //TODO - Aumentar quantidade/somar com quantidade de itens a adicionar caso item já exista no DB
+    //TODO - Adicionar URL de imagem do produto no objeto e BD também :)
 
-    //! NADA DAQUI PARA BAIXO ESTÁ FUNCIONANDO, POR ALGUM MOTIVO, ERRO ADICIONAR, ITEMS NÃO É UM ARRAY, ETC...
-    //! NÃO DA PARA USAR O POSTGRE PORQUE ELE É EXECUTADO EM UM SERVER NODE
-    // try {
+    const items = await getDocs(collection(db, 'items'));
+    for(const food of items.docs) {
+      // console.log(food.data().id)
+      if(food.data().id === item.id) {
+        throw new Error("Item já existe!");
+      }
+    }
 
-
-      
-    // } catch (error) {
-    //   console.log("Houve um erro ao tentar adicionar o item ao banco de dados", error)
-    // }
+    try {
+      const docRef = await addDoc(collection(db, 'items'), item);
+      console.log('Item adicionado com sucesso!', docRef.id);
+      setId('');
+    } catch (error) {
+      console.log("Houve um erro ao tentar adicionar o item ao banco de dados", error)
+    }
   }
+
+  useEffect(() => {
+
+    async function getData(){
+      try {
+        const query = await getDocs(collection(db, 'items'));
+        const itemsArray = query.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setItems(itemsArray);
+      } catch (error) {
+        console.log("Erro ao recuperar dados");
+      }
+    }
+
+    getData();
+  }, [])
+
 
   return (
     <>
@@ -127,6 +127,10 @@ function App() {
       <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} validade={validade} setValidade={setValidade} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleFetch={fetchProduct} handleData={fetchData}/>
       <div className="list">
         <ul className="listItens">
+          {items.map((item) => (
+            //TODO - Criar UI bonita para os itens, e talvez adicionar foto com o outro TODO acima
+            <li key={item.id}>{item.name} - {item.quantidade} - {item.marca} - {item.validade}</li>
+          ))}
         </ul>
       </div>
     </>
