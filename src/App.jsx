@@ -14,6 +14,8 @@ function App() {
   const [quantidade, setQuantidade] = useState('');
   const [validade, setValidade] = useState('');
   const [codigo, setCodigo] = useState('');
+  const [imagem, setImagem] = useState('');
+  const [altimagem, setAltImagem] = useState('');
   const [isScanning, setIsScanning] = useState(false);
 
   const [id, setId] = useState('');
@@ -67,6 +69,8 @@ function App() {
 
       setCodigo(product.code || '');
       setId(product._id || '');
+      setImagem(product.image_url || '');
+      setAltImagem(product.product_name || '');
 
     } catch (error) {
       console.error("Erro na requisição: ", error);
@@ -82,11 +86,12 @@ function App() {
       "validade": validade,
       "marca": marca,
       "quantidade": quantidade,
+      "imagem": imagem,
+      "alt": altimagem,
       "codigo": codigo
     };
     
     //TODO - Aumentar quantidade/somar com quantidade de itens a adicionar caso item já exista no DB
-    //TODO - Adicionar URL de imagem do produto no objeto e BD também :)
 
     const items = await getDocs(collection(db, 'items'));
     for(const food of items.docs) {
@@ -99,7 +104,7 @@ function App() {
     try {
       const docRef = await addDoc(collection(db, 'items'), item);
       console.log('Item adicionado com sucesso!', docRef.id);
-      setId('');
+      toggleForm();
     } catch (error) {
       console.log("Houve um erro ao tentar adicionar o item ao banco de dados", error)
     }
@@ -120,18 +125,44 @@ function App() {
     getData();
   }, [])
 
-
   return (
     <>
       <NavBar onButtonClick={toggleForm} />
       <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} validade={validade} setValidade={setValidade} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleFetch={fetchProduct} handleData={fetchData}/>
+      
       <div className="list">
-        <ul className="listItens">
-          {items.map((item) => (
-            //TODO - Criar UI bonita para os itens, e talvez adicionar foto com o outro TODO acima
-            <li key={item.id}>{item.name} - {item.quantidade} - {item.marca} - {item.validade}</li>
-          ))}
-        </ul>
+        
+        <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">Itens na despensa</h2>
+      <div className="bg-white">
+      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+
+          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+            {items.map((item) => (
+              <div key={item.id} className="group relative">
+                <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+                  <img
+                    src={item.imagem}
+                    alt={item.alt}
+                    className="h-80 w-full object-contain object-center lg:h-full lg:w-full"
+                  />
+                </div>
+                <div className="mt-4 flex justify-between">
+                  <div>
+                    <h3 className="text-sm text-gray-700">
+                      <a href="#">
+                        <span aria-hidden="true" className="absolute inset-0" />
+                        {item.name}
+                      </a>
+                    </h3>
+                    {/* <p className="mt-1 text-sm text-gray-500">{item.color}</p> */}
+                  </div>
+                  <p className="text-sm font-medium text-gray-900">Quantidade: {item.quantidade}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
       </div>
     </>
   )
