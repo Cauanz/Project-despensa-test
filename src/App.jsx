@@ -21,6 +21,7 @@ function App() {
   const [id, setId] = useState('');
 
   const [items, setItems] = useState([]);
+  const [expiring, setExpiring] = useState([])
 
   function toggleForm() {
     setOpen(!open);
@@ -67,8 +68,8 @@ function App() {
         setName(product.product_name || '')
       }
 
-      setCodigo(product.code || '');
-      setId(product._id || '');
+      setCodigo(product.code || codigo);
+      setId(product._id || codigo);
       setImagem(product.image_url || '');
       setAltImagem(product.product_name || '');
 
@@ -97,7 +98,7 @@ function App() {
     for(const food of items.docs) {
       // console.log(food.data().id)
       if(food.data().id === item.id) {
-        throw new Error("Item já existe!");
+        console.error("Item já existe!", food.data());
       }
     }
 
@@ -125,9 +126,34 @@ function App() {
     getData();
   }, [])
 
+  useEffect(() => {
+    setExpiring(getExpiringItems(items, 7));
+  }, [items])
+
+  useEffect(() => {
+    console.log(expiring)
+    expiring.map((item) => {
+      console.log(item)
+    })
+  }, [expiring])
+
+  const getExpiringItems = (items, days) => {
+    const today = new Date();
+    const day = new Date(today);
+    day.setDate(today.getDate() + days);
+
+    const expiringProducts = items.filter(item => {
+      const validityDate = new Date(item.validade);
+      return validityDate <= day;
+    })
+
+    return expiringProducts;
+  }
+
   return (
     <>
-      <NavBar onButtonClick={toggleForm} />
+      <NavBar onButtonClick={toggleForm} expiringItems={expiring} />
+      
       <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} validade={validade} setValidade={setValidade} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleFetch={fetchProduct} handleData={fetchData}/>
       
       <div className="list">
