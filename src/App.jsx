@@ -3,7 +3,7 @@ import './App.css'
 import NavBar from './components/NavBar'
 import Form from './components/Form';
 import { db } from '../firebase';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, getDocs, doc } from 'firebase/firestore';
 
 function App() {
 
@@ -37,6 +37,16 @@ function App() {
   //   console.log(err, result);
   //   // setCodigo(result);
   // }
+
+  async function removeProduct(id) {
+    try {
+      await deleteDoc(doc(db, "items", id));
+      console.log(`Produto ${id} Deletado com sucesso`)
+      // setExpiring(prev => prev.filter(product => product.id !== id));
+    } catch (error) {
+      console.log("Erro ao remover o item", error)
+    }
+  }
 
   async function fetchProduct() {
     const url = `https://world.openfoodfacts.org/api/v0/product/${codigo}.json`;
@@ -152,9 +162,9 @@ function App() {
 
   return (
     <>
-      <NavBar onButtonClick={toggleForm} expiringItems={expiring} />
+      <NavBar onButtonClick={toggleForm} expiringItems={expiring}  />
       
-      <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} validade={validade} setValidade={setValidade} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleFetch={fetchProduct} handleData={fetchData}/>
+      <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} validade={validade} setValidade={setValidade} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleFetch={fetchProduct} handleData={fetchData} removeItem={removeProduct}/>
       
       <div className="list">
         
@@ -182,6 +192,7 @@ function App() {
                     </h3>
                     {/* <p className="mt-1 text-sm text-gray-500">{item.color}</p> */}
                   </div>
+                  <button className='z-50' onClick={() => removeProduct(item.id)}>Remove</button>
                   <p className="text-sm font-medium text-gray-900">Quantidade: {item.quantidade}</p>
                 </div>
               </div>
