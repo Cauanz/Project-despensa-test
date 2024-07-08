@@ -38,11 +38,12 @@ function App() {
   //   // setCodigo(result);
   // }
 
-  async function removeProduct(id) {
+  async function removeProduct(_id) {
     try {
-      await deleteDoc(doc(db, "items", id));
-      console.log(`Produto ${id} Deletado com sucesso`)
-      // setExpiring(prev => prev.filter(product => product.id !== id));
+      await deleteDoc(doc(db, "items", _id));
+      console.log(`Produto ${_id} Deletado com sucesso`)
+      setExpiring(prev => prev.filter(product => product._id !== _id));
+      fetchItems();
     } catch (error) {
       console.log("Erro ao remover o item", error)
     }
@@ -88,7 +89,7 @@ function App() {
     }
   }
 
-  async function fetchData(e) {
+  async function addItem(e) {
     e.preventDefault();
 
     const item = {
@@ -116,36 +117,31 @@ function App() {
       const docRef = await addDoc(collection(db, 'items'), item);
       console.log('Item adicionado com sucesso!', docRef.id);
       toggleForm();
+      fetchItems();
     } catch (error) {
       console.log("Houve um erro ao tentar adicionar o item ao banco de dados", error)
     }
   }
 
-  useEffect(() => {
-
-    async function getData(){
-      try {
-        const query = await getDocs(collection(db, 'items'));
-        const itemsArray = query.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setItems(itemsArray);
-      } catch (error) {
-        console.log("Erro ao recuperar dados");
-      }
+  async function fetchItems(){
+    try {
+      const query = await getDocs(collection(db, 'items'));
+      const itemsArray = query.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
+      // console.log(query.docs.map(doc => console.log(doc.id))) //DEBUG
+      setItems(itemsArray);
+    } catch (error) {
+      console.log("Erro ao recuperar dados");
     }
+  }
 
-    getData();
-  }, [])
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
   useEffect(() => {
     setExpiring(getExpiringItems(items, 7));
   }, [items])
-
-  useEffect(() => {
-    console.log(expiring)
-    expiring.map((item) => {
-      console.log(item)
-    })
-  }, [expiring])
 
   const getExpiringItems = (items, days) => {
     const today = new Date();
@@ -164,7 +160,7 @@ function App() {
     <>
       <NavBar onButtonClick={toggleForm} expiringItems={expiring}  />
       
-      <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} validade={validade} setValidade={setValidade} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleFetch={fetchProduct} handleData={fetchData} removeItem={removeProduct}/>
+      <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} validade={validade} setValidade={setValidade} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleFetch={fetchProduct} handleData={addItem} removeItem={removeProduct}/>
       
       <div className="list">
         
@@ -192,9 +188,11 @@ function App() {
                     </h3>
                     {/* <p className="mt-1 text-sm text-gray-500">{item.color}</p> */}
                   </div>
-                  <button className='z-50' onClick={() => removeProduct(item.id)}>Remove</button>
                   <p className="text-sm font-medium text-gray-900">Quantidade: {item.quantidade}</p>
                 </div>
+                
+                <button type='button' title='Remover' className='relative z-50 bg-red-600 p-2 rounded-lg' onClick={() => removeProduct(item._id)}>Remover</button>
+              
               </div>
             ))}
           </div>
