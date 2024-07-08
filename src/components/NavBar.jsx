@@ -30,22 +30,21 @@ export default function NavBar({ onButtonClick, expiringItems }) {
       //    </ul>
       // </nav>
 
-      <header className="bg-white">
+      <header className="bg-sky-300">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
          <div className="flex lg:flex-1">
          </div>
          <div className="flex lg:hidden">
 
             <Menu as="div" className="relative inline-block text-left">
-               <div className="relative">
+               <div className="relative flex justify-center align-middle">
                   {expiringItems.length !== 0 && (
                      <div className="dot absolute bg-orange-500 w-5 h-5 rounded-xl text-center">{expiringItems.length }</div>
                   )}
-               <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-3">
+               <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent mr-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                   </svg>
-                  {/* <ChevronDownIcon aria-hidden="true" className="-mr-1 h-5 w-5 text-gray-400" /> */}
                </MenuButton>
                </div>
 
@@ -59,16 +58,6 @@ export default function NavBar({ onButtonClick, expiringItems }) {
                            <p>{item.name}</p>
                         </MenuItem>
                   ))}
-                  {/* <form action="#" method="POST">
-                     <MenuItem>
-                     <button
-                        type="submit"
-                        className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                     >
-                        Sign out
-                     </button>
-                     </MenuItem>
-                  </form> */}
                </div>
                </MenuItems>
             </Menu>
@@ -105,7 +94,7 @@ export default function NavBar({ onButtonClick, expiringItems }) {
             Adicionar itens
             </a>
             <button
-               onClick={() => setNotificationOpen(true)}
+               // onClick={() => setNotificationOpen(true)}
             >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-3">
             <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
@@ -117,10 +106,9 @@ export default function NavBar({ onButtonClick, expiringItems }) {
 
       <Dialog className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
          <div className="fixed inset-0 z-10" />
-         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-sky-300 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">
                <a href="#" className="-m-1.5 p-1.5">
-               <span className="sr-only">Your Company</span>   
                <img
                   className="h-8 w-auto"
                   src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"

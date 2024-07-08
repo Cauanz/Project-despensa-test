@@ -191,7 +191,7 @@ function App() {
                   <p className="text-sm font-medium text-gray-900">Quantidade: {item.quantidade}</p>
                 </div>
                 
-                <button type='button' title='Remover' className='relative z-50 bg-red-600 p-2 rounded-lg' onClick={() => removeProduct(item._id)}>Remover</button>
+                <button type='button' title='Remover' className='relative bg-red-600 p-2 rounded-lg' onClick={() => removeProduct(item._id)}>Remover</button>
               
               </div>
             ))}
