@@ -3,7 +3,7 @@ import './App.css'
 import NavBar from './components/NavBar'
 import Form from './components/Form';
 import { db } from '../firebase';
-import { addDoc, collection, deleteDoc, getDocs, doc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 function App() {
 
@@ -30,6 +30,8 @@ function App() {
     setQuantidade('');
     setValidade('');
     setCodigo('');
+    setAltImagem('')
+    setImagem('')
     setId('');
   }
 
@@ -40,6 +42,18 @@ function App() {
 
   async function removeProduct(_id) {
     try {
+      const item = await getDoc(doc(db, "items", _id));
+      const itemQuantity = parseInt(item.data().quantidade);
+
+      if(itemQuantity > 1) {
+        const newQuantity = itemQuantity - 1;
+        await updateDoc(doc(db, "items", _id), {
+          quantidade: String(newQuantity)
+        })
+        fetchItems();
+        return
+      }
+
       await deleteDoc(doc(db, "items", _id));
       console.log(`Produto ${_id} Deletado com sucesso`)
       setExpiring(prev => prev.filter(product => product._id !== _id));

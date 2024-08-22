@@ -39,7 +39,7 @@ export default function NavBar({ onButtonClick, expiringItems }) {
             <Menu as="div" className="relative inline-block text-left">
                <div className="relative flex justify-center align-middle">
                   {expiringItems.length !== 0 && (
-                     <div className="dot absolute bg-orange-500 w-5 h-5 rounded-xl text-center">{expiringItems.length }</div>
+                     <div className="dot absolute bg-orange-500 w-5 h-5 rounded-xl text-center pointer-events-none">{expiringItems.length }</div>
                   )}
                <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent mr-4">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
