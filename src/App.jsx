@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import NavBar from './components/NavBar'
 import Form from './components/Form';
-import { db } from '../firebase';
-import { addDoc, collection, deleteDoc, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { removeProduct, fetchProduct, addItem, fetchItems } from './firebaseFunctions/productHandle';
+import Modal from './components/Modal';
 
 function App() {
 
@@ -17,6 +17,12 @@ function App() {
   const [imagem, setImagem] = useState('');
   const [altimagem, setAltImagem] = useState('');
   const [isScanning, setIsScanning] = useState(false);
+  const [error, setError] = useState('');
+  const [notifications, setNotifications] = useState([]);
+  
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedItems, setSelectedItems] = useState(0);
+  const [removeItem, setRemoveItem] = useState([]);
 
   const [id, setId] = useState('');
 
@@ -40,117 +46,10 @@ function App() {
   //   // setCodigo(result);
   // }
 
-  async function removeProduct(_id) {
-    try {
-      const item = await getDoc(doc(db, "items", _id));
-      const itemQuantity = parseInt(item.data().quantidade);
-
-      if(itemQuantity > 1) {
-        const newQuantity = itemQuantity - 1;
-        await updateDoc(doc(db, "items", _id), {
-          quantidade: String(newQuantity)
-        })
-        fetchItems();
-        return
-      }
-
-      await deleteDoc(doc(db, "items", _id));
-      console.log(`Produto ${_id} Deletado com sucesso`)
-      setExpiring(prev => prev.filter(product => product._id !== _id));
-      fetchItems();
-    } catch (error) {
-      console.log("Erro ao remover o item", error)
-    }
-  }
-
-  async function fetchProduct() {
-    const url = `https://world.openfoodfacts.org/api/v0/product/${codigo}.json`;
-
-    if(codigo === ''){
-      return null;
-    }
-
-    try {
-      let response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('A requisição falhou');
-      }
-      let data = await response.json();
-
-      if (!data || !data.product) {
-        console.error("Produto não encontrado na resposta");
-        return;
-      }
-
-      console.log(data.product);
-      let product = data.product;
-
-      if(marca === '') {
-        setMarca(product.brands || '');
-      }
-
-      if(name === '') {
-        setName(product.product_name || '')
-      }
-
-      setCodigo(product.code || codigo);
-      setId(product._id || codigo);
-      setImagem(product.image_url || '');
-      setAltImagem(product.product_name || '');
-
-    } catch (error) {
-      console.error("Erro na requisição: ", error);
-    }
-  }
-
-  async function addItem(e) {
-    e.preventDefault();
-
-    const item = {
-      "id": id,
-      "name": name,
-      "validade": validade,
-      "marca": marca,
-      "quantidade": quantidade,
-      "imagem": imagem,
-      "alt": altimagem,
-      "codigo": codigo
-    };
-    
-    //TODO - Aumentar quantidade/somar com quantidade de itens a adicionar caso item já exista no DB
-
-    const items = await getDocs(collection(db, 'items'));
-    for(const food of items.docs) {
-      // console.log(food.data().id)
-      if(food.data().id === item.id) {
-        console.error("Item já existe!", food.data());
-      }
-    }
-
-    try {
-      const docRef = await addDoc(collection(db, 'items'), item);
-      console.log('Item adicionado com sucesso!', docRef.id);
-      toggleForm();
-      fetchItems();
-    } catch (error) {
-      console.log("Houve um erro ao tentar adicionar o item ao banco de dados", error)
-    }
-  }
-
-  async function fetchItems(){
-    try {
-      const query = await getDocs(collection(db, 'items'));
-      const itemsArray = query.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
-      // console.log(query.docs.map(doc => console.log(doc.id))) //DEBUG
-      setItems(itemsArray);
-    } catch (error) {
-      console.log("Erro ao recuperar dados");
-    }
-  }
-
+  //TODO TALVEZ TERIA QUE CRIAR UM REGISTRO MAIS ROBUSTO DE CADA ITEM DO DB PARA PODER ADICIONAR FUNÇÕES MAIS AVANÇADAS OU MAIS TRABALHADAS, TIPO VALIDADE, MULTIPLOS ITENS COM DATA DE VALIDADE DIFERENTES EM ARRAY ETC.
 
   useEffect(() => {
-    fetchItems();
+    fetchItems(setItems);
   }, []);
 
   useEffect(() => {
@@ -170,48 +69,87 @@ function App() {
     return expiringProducts;
   }
 
+  useEffect(() => {
+    console.log(removeItem);
+  }, [removeItem]);
+
+  useEffect(() => {
+    if(codigo == '') {
+      setError('');
+    }
+  }, [codigo])
+
+  const handleRemove = (item) => {
+    if (item.quantidade > 1) {
+      setRemoveItem(item);
+      setOpenModal(true);
+    } else {
+      removeProduct(setExpiring, item._id);
+    }
+  };
+
   return (
     <>
       <NavBar onButtonClick={toggleForm} expiringItems={expiring}  />
       
-      <Form isOpen={open} onToggle={setOpen} name={name} setName={setName} validade={validade} setValidade={setValidade} brand={marca} setBrand={setMarca} quantidade={quantidade} setQuantidade={setQuantidade} codigo={codigo} setCodigo={setCodigo} isScanning={isScanning} setIsScanning={setIsScanning} handleFetch={fetchProduct} handleData={addItem} removeItem={removeProduct}/>
+      <Form 
+        isOpen={open} 
+        onToggle={setOpen} 
+        name={name} 
+        setName={setName} 
+        validade={validade} 
+        setValidade={setValidade} 
+        brand={marca} 
+        setBrand={setMarca} 
+        quantidade={quantidade} 
+        setQuantidade={setQuantidade} 
+        codigo={codigo}
+        setCodigo={setCodigo} 
+        isScanning={isScanning} 
+        setIsScanning={setIsScanning} 
+        handleFetch={() => { fetchProduct(codigo, name, marca, setMarca, setName, setCodigo, setId, setImagem, setAltImagem, setError) }}
+        error={error}
+        handleData={(e) => addItem(e, id, validade, marca, name, quantidade, imagem, altimagem, codigo, toggleForm)} 
+        removeItem={removeProduct}
+      />
       
       <div className="list">
-        
-        <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">Itens na despensa</h2>
-      <div className="bg-white">
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        {/* <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">Itens na despensa</h2> */}
+        <div className="bg-white">
+          <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
 
-          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {items.map((item) => (
-              <div key={item.id} className="group relative">
-                <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-                  <img
-                    src={item.imagem}
-                    alt={item.alt}
-                    className="h-80 w-full object-contain object-center lg:h-full lg:w-full"
-                  />
-                </div>
-                <div className="mt-4 flex justify-between">
-                  <div>
-                    <h3 className="text-sm text-gray-700">
-                      <a href="#">
-                        <span aria-hidden="true" className="absolute inset-0" />
-                        {item.name}
-                      </a>
-                    </h3>
-                    {/* <p className="mt-1 text-sm text-gray-500">{item.color}</p> */}
+            <Modal open={openModal} setOpen={setOpenModal} selected={selectedItems} setSelected={selectedItems} item={removeItem} />
+
+            <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+              {items.map((item) => (
+                <div key={item.id} className="group relative">
+                  <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+                    <img
+                      src={item.imagem}
+                      alt={item.alt}
+                      className="h-80 w-full object-contain object-center lg:h-full lg:w-full"
+                    />
                   </div>
-                  <p className="text-sm font-medium text-gray-900">Quantidade: {item.quantidade}</p>
+                  <div className="mt-4 flex justify-between flex-col">
+                    <div>
+                      <h3 className="text-sm text-gray-700">
+                        <a href="#">
+                          {/* <span aria-hidden="true" className="absolute inset-0" /> */}
+                          {item.name}
+                        </a>
+                      </h3>
+                      {/* <p className="mt-1 text-sm text-gray-500">{item.color}</p> */}
+                    </div>
+                    <p className="text-sm font-medium text-gray-900 flex justify-end">Qtd: {item.quantidade}</p>
+                  </div>
+                  
+                  <button type='button' title='Remover' className='relative bg-red-600 p-2 rounded-lg' onClick={() => handleRemove(item)}>Remover</button>
+                  {/* <button type='button' title='Remover' className='relative bg-red-600 p-2 rounded-lg' onClick={() => removeProduct(setExpiring, item._id)}>Remover</button> */}
                 </div>
-                
-                <button type='button' title='Remover' className='relative bg-red-600 p-2 rounded-lg' onClick={() => removeProduct(item._id)}>Remover</button>
-              
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            </div>
         </div>
-      </div>
       </div>
     </>
   )

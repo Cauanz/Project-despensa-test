@@ -1,11 +1,10 @@
 /* eslint-disable react/prop-types */
-// import { Link } from "react-router-dom"
 import "./NavBar.css";
 
 import { useState } from 'react'
 import { Dialog, DialogPanel, Disclosure, PopoverGroup } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { Menu, MenuButton, MenuItems } from '@headlessui/react'
 // import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 export default function NavBar({ onButtonClick, expiringItems }) {
@@ -33,9 +32,10 @@ export default function NavBar({ onButtonClick, expiringItems }) {
       <header className="bg-sky-300">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
          <div className="flex lg:flex-1">
+            <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">Itens na despensa</h2>
          </div>
-         <div className="flex lg:hidden">
 
+         <div className="flex lg:hidden">
             <Menu as="div" className="relative inline-block text-left">
                <div className="relative flex justify-center align-middle">
                   {expiringItems.length !== 0 && (
@@ -50,35 +50,42 @@ export default function NavBar({ onButtonClick, expiringItems }) {
 
                <MenuItems
                transition
-               className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+               className="absolute right-0 z-10 mt-2 min-w-96 max-w-lg origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                >
                <div className="py-1">
                   {expiringItems.map((item) => (
-                        <MenuItem key={item.id}>
-                           <p>{item.name}</p>
-                        </MenuItem>
+                     <li key={item.id} className="flex justify-between gap-x-6 p-3 border-t border-b">
+                        <div className="flex min-w-0 gap-x-4">
+                           <img alt={item.alt} src={item.imagem} className="size-12 flex-none rounded-full bg-gray-50" />
+                           <div className="min-w-0 flex-auto">
+                           <p className="text-sm/6 font-semibold text-gray-900">Produto vencido</p>
+                           <p className="mt-1 truncate text-xs/5 text-gray-500">{item.name}</p>
+                           </div>
+                        </div>
+                        <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+                           {/* <p className="text-sm/6 text-gray-900">{person.role}</p> */}
+                           {/* {person.lastSeen ? (
+                           <p className="mt-1 text-xs/5 text-gray-500">
+                              Last seen <time dateTime={person.lastSeenDateTime}>{person.lastSeen}</time>
+                           </p>
+                           ) : (
+                           <div className="mt-1 flex items-center gap-x-1.5">
+                              <div className="flex-none rounded-full bg-emerald-500/20 p-1">
+                                 <div className="size-1.5 rounded-full bg-emerald-500" />
+                              </div>
+                              <p className="text-xs/5 text-gray-500">Online</p>
+                           </div>
+                           )} */}
+                        </div>
+                     </li>
+
+                        // <MenuItem className="text-xs" key={item.id}>
+                        //    <p>Produto vencido: {item.name}</p>
+                        // </MenuItem>
                   ))}
                </div>
                </MenuItems>
             </Menu>
-            
-            {/* //!MODAL NOTIFICAÇÃO */}
-            {/* <div  id="toast-default" className=" absolute top-14 right-14 flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
-               <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200">
-                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
-                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.147 15.085a7.159 7.159 0 0 1-6.189 3.307A6.713 6.713 0 0 1 3.1 15.444c-2.679-4.513.287-8.737.888-9.548A4.373 4.373 0 0 0 5 1.608c1.287.953 6.445 3.218 5.537 10.5 1.5-1.122 2.706-3.01 2.853-6.14 1.433 1.049 3.993 5.395 1.757 9.117Z"/>
-                  </svg>
-                  <span className="sr-only">Fire icon</span>
-               </div>
-               <div className="ms-3 text-sm font-normal">Set yourself free.</div>
-               <button type="button" className="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-default" aria-label="Close">
-                  <span className="sr-only">Close</span>
-                  <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                  </svg>
-               </button>
-            </div> */}
-            {/* //!MODAL NOTIFICAÇÃO */}
 
             <button
                type="button"
@@ -106,7 +113,7 @@ export default function NavBar({ onButtonClick, expiringItems }) {
 
       <Dialog className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
          <div className="fixed inset-0 z-10" />
-         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-sky-300 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-blue-600 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">
                <a href="#" className="-m-1.5 p-1.5">
                <img

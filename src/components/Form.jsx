@@ -3,10 +3,11 @@ import "./Form.css";
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 // import { BarcodeScanner } from 'react-barcode-scanner';
 
-export default function Form({ isOpen, onToggle, name, setName, validade, setValidade, quantidade, setQuantidade, brand, setBrand, codigo, setCodigo, isScanning, setIsScanning, handleScan, handleFetch, handleData }) {
+export default function Form({ isOpen, onToggle, name, setName, validade, setValidade, quantidade, setQuantidade, brand, setBrand, codigo, setCodigo, handleFetch, handleData, error }) {
 
 return (
       <Dialog className="relative z-10" open={isOpen} onClose={() => onToggle(true)}>
+
       <DialogBackdrop
          transition
          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
@@ -107,37 +108,36 @@ return (
                               Código de barras
                            </label>
                            <div className="mt-2 flex items-center gap-x-3 h-6">
-                              <button
+                              {/* <button
                                  type="button"
                                  disabled={true} //TEMPORARIO ATÉ ARRUMAR LEITORES DE CÓDIGO QUE FUNCIONEM
                                  onClick={() => setIsScanning(true)}
                                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 absolute">
                                  Adicionar
                               </button>
-      
-                              {isScanning && (
+
+                              { isScanning && (
                                  <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50" onClick={() => setIsScanning(false)}>
                                     <div className="modal h-96 w-96 overflow-auto">
                                        <div className="item flex justify-center items-center h-full">
 
-                                          {/* //TODO - Leitores de código de barra usando a camera estão quebrados, nenhum que achei é facil de implementar ou não vale a pena tentar */}
+                                          {/* //TODO - Leitores de código de barra usando a camera estão quebrados, nenhum que achei é facil de implementar ou não vale a pena tentar
 
-                                          {/* //* por enquanto somente por entrada manual */}
+                                          {/* //* por enquanto somente por entrada manual
 
-                                          {/* <BarcodeScanner 
+                                          <BarcodeScanner 
                                              width={300}
                                              height={300}
                                              value={codigo}
                                              onCapture={() => {handleScan(), setIsScanning(false)}}
-                                          /> */}
+                                          />
 
                                        </div>
                                     </div>
                               </div>
-                              )}
-
+                              )} */}
                            </div>
-                           <div className="mt-2">
+                           <div>
                               <label htmlFor="bar-code" className="mt-1 text-sm leading-6 text-gray-600">Ou adicione manualmente</label>
                               <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                                  <input
@@ -147,11 +147,11 @@ return (
                                  value={codigo}
                                  onBlur={handleFetch}
                                  onChange={(e) => setCodigo(e.target.value)}
-                                 autoComplete="bar-code"
                                  className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                                 placeholder="1002934857383"
+                                 placeholder="01234567891011"
                                  />
                               </div>
+                                 { error && error !== '' && <p className="mt-1 text-sm text-red-500">{error}</p>}
                            </div>
                            </div>
                      </div>

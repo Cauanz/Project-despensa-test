@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-   apiKey: "AIzaSyAlwF0OuVpFJFgue20B2TzuKiXvprADL1k",
-   authDomain: "food-manager-c4541.firebaseapp.com",
-   projectId: "food-manager-c4541",
-   storageBucket: "food-manager-c4541.appspot.com",
-   messagingSenderId: "288939457398",
-   appId: "1:288939457398:web:048e8d0ab70c57d2719857"
+   apiKey: "AIzaSyCS63VThfFFU4N3O7QUuzWqWNzxuInWoUc",
+   authDomain: "food-manager-b7ca2.firebaseapp.com",
+   projectId: "food-manager-b7ca2",
+   storageBucket: "food-manager-b7ca2.firebasestorage.app",
+   messagingSenderId: "242396795795",
+   appId: "1:242396795795:web:23d1a5fe84bab63d8ece66"
 };
 
 const app = initializeApp(firebaseConfig);
