@@ -225,17 +225,17 @@ return (
 
 Form.propTypes = {
    isOpen: PropTypes.bool,
-   onToggle: PropTypes.bool,
+   onToggle: PropTypes.func,
    name: PropTypes.string,
-   setName: PropTypes.string,
+   setName: PropTypes.func,
    validade: PropTypes.string,
-   setValidade: PropTypes.string,
+   setValidade: PropTypes.func,
    quantidade: PropTypes.string,
-   setQuantidade: PropTypes.string,
+   setQuantidade: PropTypes.func,
    brand: PropTypes.string,
-   setBrand: PropTypes.string,
+   setBrand: PropTypes.func,
    codigo: PropTypes.string,
-   setCodigo: PropTypes.string,
+   setCodigo: PropTypes.func,
    handleFetch: PropTypes.func,
    handleData: PropTypes.func,
    error: PropTypes.string

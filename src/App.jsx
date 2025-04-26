@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import NavBar from './components/NavBar'
 import Form from './components/Form';
-import { removeProduct, fetchProduct, addItem, fetchItems } from './firebaseFunctions/productHandle';
+import { removeProduct, fetchProduct, addItem, fetchItems } from '../redux/itemsRelated/itemsHandle';
 import Modal from './components/Modal';
-
+import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 function App() {
+
+  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
 
@@ -18,15 +22,17 @@ function App() {
   const [altimagem, setAltImagem] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState('');
-  const [notifications, setNotifications] = useState([]);
+  // const [notifications, setNotifications] = useState([]);
   
   const [openModal, setOpenModal] = useState(false);
   
-  const [removeItem, setRemoveItem] = useState([]);
+  const [removeItem, setRemoveItem] = useState({});
 
   const [id, setId] = useState('');
 
-  const [items, setItems] = useState([]);
+  // const [items, setItems] = useState([]);
+  const { items } = useSelector((state) => state.items);
+
   const [expiring, setExpiring] = useState([])
 
   function toggleForm() {
@@ -44,7 +50,8 @@ function App() {
   //TODO TALVEZ TERIA QUE CRIAR UM REGISTRO MAIS ROBUSTO DE CADA ITEM DO DB PARA PODER ADICIONAR FUNÇÕES MAIS AVANÇADAS OU MAIS TRABALHADAS, TIPO VALIDADE, MULTIPLOS ITENS COM DATA DE VALIDADE DIFERENTES EM ARRAY ETC.
 
   useEffect(() => {
-    fetchItems(setItems);
+    dispatch(fetchItems());
+    console.log("Atualizado");
   }, []);
 
   useEffect(() => {
@@ -147,3 +154,24 @@ function App() {
 }
 
 export default App
+
+App.propTypes = {
+  items: PropTypes.array,
+  removeItem: PropTypes.object,
+  setOpen: PropTypes.func,
+  setExpiring: PropTypes.func,
+  onToggle: PropTypes.func,
+  name: PropTypes.string,
+  setName: PropTypes.func,
+  validade: PropTypes.string,
+  setValidade: PropTypes.func,
+  quantidade: PropTypes.string,
+  setQuantidade: PropTypes.func,
+  brand: PropTypes.string,
+  setBrand: PropTypes.func,
+  codigo: PropTypes.string,
+  setCodigo: PropTypes.func,
+  handleFetch: PropTypes.func,
+  handleData: PropTypes.func,
+}
+

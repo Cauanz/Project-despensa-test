@@ -1,36 +1,41 @@
 import dayjs from 'dayjs';
 import { db } from '../../firebase';
 import { addDoc, collection, deleteDoc, getDocs, doc, getDoc, updateDoc, query } from 'firebase/firestore';
+import { doneSuccess, getError, getRequest } from './itemsSlice';
 
-//TODO - TALVEZ ADICIONAR UM GERENCIADOR DE ESTADO EXTERNO, ENTÃO O FETCHITEMS SEMPRE IRA ATUALIZAR OS ITEMS NO FRONT SEM DEPENDER DO SETITEMS
+//TODO - ATUALIZADOR DE ESTADO (DISPATCH SEI LÁ) NÃO ESTÁ FUNCIONANDO, FUNÇÕES NÃO SÃO NEM MESMO CHAMADAS
 
-export async function removeProduct(setExpiring, id, quantity) {
+export const removeProduct = (setExpiring, id, quantity) => async (dispatch) => {
   try {
     const itemRef = doc(db, 'items', id);
     const itemSnap = await getDoc(itemRef);
+
+    console.log('ESTÁ FUNCIONANDO');
 
     if(itemSnap.data().quantidade > 1) {
       const newQuantity = itemSnap.data().quantidade - quantity;
 
       if(newQuantity <= 0) {
+        console.log('PASSOU POR AQUI');
         await deleteDoc(doc(db, "items", id));
-        fetchItems();
+        dispatch(fetchItems());
         return;
       }
 
       await updateDoc(doc(db, "items", id), {
         quantidade: String(newQuantity)
       })
-      fetchItems();
+      console.log('CHEGOU AQUI');
+      dispatch(fetchItems());
       return;
     }
 
     await deleteDoc(doc(db, "items", id));
 
     console.log(`Produto ${id} Deletado com sucesso`)
-
+    
     setExpiring(prev => prev.filter(product => product._id !== id));
-    fetchItems();
+    dispatch(fetchItems());
   } catch (error) {
     console.log("Erro ao remover o item", error)
   }
@@ -127,7 +132,9 @@ export async function addItem(e, id, validade, marca, name, quantidade, imagem, 
   }
 }
 
-export async function fetchItems(setItems){
+export const fetchItems = () => async (dispatch) => {
+  dispatch(getRequest());
+
   try {
     const itemsQuery = await query(collection(db, 'items'));
     const itemsSnapshot = await getDocs(itemsQuery);
@@ -136,13 +143,17 @@ export async function fetchItems(setItems){
     const itemsArray = itemsSnapshot.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
     // console.log(query.docs.map(doc => console.log(doc.id))) //DEBUG
     
-    setItems(itemsArray);
+    dispatch(doneSuccess(itemsArray));
+    // setItems(itemsArray);
   } catch (error) {
+    dispatch(getError("Erro ao recuperar dados", error));
     console.log("Erro ao recuperar dados", error);
   }
 }
 
 async function fetchExpiringDate(days) {
+
+  console.log(days);
 
   const ItemsRef = collection(db, 'items');
   const itemsQuery = await getDocs(ItemsRef);
