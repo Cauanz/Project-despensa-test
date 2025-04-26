@@ -1,8 +1,18 @@
-import { useState } from 'react'
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle, Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
-import { CheckIcon, ChevronUpDownIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from 'react'
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
+import { ChevronUpDownIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import { removeProduct } from '../firebaseFunctions/productHandle';
 
-export default function Modal({ open, setOpen, selected, setSelected, item }) {
+export default function Modal({ open, setOpen, item, setExpiring }) {
+
+  const [selectedItems, setSelectedItems] = useState(null);
+
+  const handleSubmit = () => {
+    removeProduct(setExpiring, item._id, selectedItems);
+    setOpen(false);
+  }
+
 
   return (
     <Dialog open={open} onClose={setOpen} className="relative z-10">
@@ -35,15 +45,18 @@ export default function Modal({ open, setOpen, selected, setSelected, item }) {
               </div>
             </div>
 
-            <Listbox value={selected} onChange={setSelected}>
+            <Listbox value={selectedItems} onChange={setSelectedItems}>
               {/* <Label className="block text-sm/6 font-medium text-gray-900">Assigned to</Label> */}
               <div className="relative mt-2">
-                <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pl-3 pr-2 text-left text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
-                  <ChevronUpDownIcon
-                    aria-hidden="true"
-                    className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                  />
-                </ListboxButton>
+              <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                <span className="col-start-1 row-start-1 flex items-center gap-3 pr-6">
+                  <span className="block truncate">{selectedItems}</span>
+                </span>
+                <ChevronUpDownIcon
+                  aria-hidden="true"
+                  className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                />
+              </ListboxButton>
 
                 <ListboxOptions
                   transition
@@ -55,13 +68,9 @@ export default function Modal({ open, setOpen, selected, setSelected, item }) {
                       value={num}
                       className="group relative cursor-default select-none pl-3 pr-9 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white data-[focus]:outline-none"
                     >
-                      //TODO - ITENS NÃO ESTÃO SENDO SELECIONADOS
-                      <span className="ml-3 block truncate font-normal group-data-[selected]:font-semibold">
-                        {num}
-                      </span>
-                      <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600 group-[&:not([data-selected])]:hidden group-data-[focus]:text-white">
-                        <CheckIcon aria-hidden="true" className="size-5" />
-                      </span>
+                  <div className="flex items-center">
+                    <span className="ml-3 block truncate font-normal group-data-selected:font-semibold">{num}</span>
+                  </div>
                     </ListboxOption>
                   ))}
                 </ListboxOptions>
@@ -69,14 +78,14 @@ export default function Modal({ open, setOpen, selected, setSelected, item }) {
             </Listbox>
 
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-              {/* <button
+              <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={() => handleSubmit()}
                 className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
               >
-                Deactivate
+                Remover
               </button>
-              <button
+              {/* <button
                 type="button"
                 data-autofocus
                 onClick={() => setOpen(false)}

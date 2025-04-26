@@ -2,22 +2,33 @@ import dayjs from 'dayjs';
 import { db } from '../../firebase';
 import { addDoc, collection, deleteDoc, getDocs, doc, getDoc, updateDoc, query } from 'firebase/firestore';
 
-export async function removeProduct(setExpiring, id) {
-  try {
-    const item = await getDoc(doc(db, "items", id));
-    const itemQuantity = parseInt(item.data().quantidade);
+//TODO - TALVEZ ADICIONAR UM GERENCIADOR DE ESTADO EXTERNO, ENTÃO O FETCHITEMS SEMPRE IRA ATUALIZAR OS ITEMS NO FRONT SEM DEPENDER DO SETITEMS
 
-    if(itemQuantity > 1) {
-      const newQuantity = itemQuantity - 1;
+export async function removeProduct(setExpiring, id, quantity) {
+  try {
+    const itemRef = doc(db, 'items', id);
+    const itemSnap = await getDoc(itemRef);
+
+    if(itemSnap.data().quantidade > 1) {
+      const newQuantity = itemSnap.data().quantidade - quantity;
+
+      if(newQuantity <= 0) {
+        await deleteDoc(doc(db, "items", id));
+        fetchItems();
+        return;
+      }
+
       await updateDoc(doc(db, "items", id), {
         quantidade: String(newQuantity)
       })
       fetchItems();
-      return
+      return;
     }
 
     await deleteDoc(doc(db, "items", id));
+
     console.log(`Produto ${id} Deletado com sucesso`)
+
     setExpiring(prev => prev.filter(product => product._id !== id));
     fetchItems();
   } catch (error) {

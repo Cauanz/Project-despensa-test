@@ -21,7 +21,7 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   
   const [openModal, setOpenModal] = useState(false);
-  const [selectedItems, setSelectedItems] = useState(0);
+  
   const [removeItem, setRemoveItem] = useState([]);
 
   const [id, setId] = useState('');
@@ -40,11 +40,6 @@ function App() {
     setImagem('')
     setId('');
   }
-
-  // function handleScan(err, result) {
-  //   console.log(err, result);
-  //   // setCodigo(result);
-  // }
 
   //TODO TALVEZ TERIA QUE CRIAR UM REGISTRO MAIS ROBUSTO DE CADA ITEM DO DB PARA PODER ADICIONAR FUNÇÕES MAIS AVANÇADAS OU MAIS TRABALHADAS, TIPO VALIDADE, MULTIPLOS ITENS COM DATA DE VALIDADE DIFERENTES EM ARRAY ETC.
 
@@ -70,10 +65,6 @@ function App() {
   }
 
   useEffect(() => {
-    console.log(removeItem);
-  }, [removeItem]);
-
-  useEffect(() => {
     if(codigo == '') {
       setError('');
     }
@@ -84,7 +75,7 @@ function App() {
       setRemoveItem(item);
       setOpenModal(true);
     } else {
-      removeProduct(setExpiring, item._id);
+      removeProduct(setExpiring, item._id, 1);
     }
   };
 
@@ -118,7 +109,7 @@ function App() {
         <div className="bg-white">
           <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
 
-            <Modal open={openModal} setOpen={setOpenModal} selected={selectedItems} setSelected={selectedItems} item={removeItem} />
+            <Modal open={openModal} setOpen={setOpenModal} item={removeItem} setExpiring={setExpiring} />
 
             <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
               {items.map((item) => (
