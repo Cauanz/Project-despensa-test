@@ -1,6 +1,6 @@
-/* eslint-disable react/prop-types */
 import "./Form.css";
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
+import PropTypes from 'prop-types';
 // import { BarcodeScanner } from 'react-barcode-scanner';
 
 export default function Form({ isOpen, onToggle, name, setName, validade, setValidade, quantidade, setQuantidade, brand, setBrand, codigo, setCodigo, handleFetch, handleData, error }) {
@@ -221,4 +221,22 @@ return (
       </div>
       </Dialog>
    )
+}
+
+Form.propTypes = {
+   isOpen: PropTypes.bool,
+   onToggle: PropTypes.bool,
+   name: PropTypes.string,
+   setName: PropTypes.string,
+   validade: PropTypes.string,
+   setValidade: PropTypes.string,
+   quantidade: PropTypes.string,
+   setQuantidade: PropTypes.string,
+   brand: PropTypes.string,
+   setBrand: PropTypes.string,
+   codigo: PropTypes.string,
+   setCodigo: PropTypes.string,
+   handleFetch: PropTypes.func,
+   handleData: PropTypes.func,
+   error: PropTypes.string
 }

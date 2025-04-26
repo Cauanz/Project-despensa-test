@@ -1,8 +1,8 @@
-/* eslint-disable react/prop-types */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ChevronUpDownIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 import { removeProduct } from '../firebaseFunctions/productHandle';
+import PropTypes from 'prop-types';
 
 export default function Modal({ open, setOpen, item, setExpiring }) {
 
@@ -108,4 +108,11 @@ export default function Modal({ open, setOpen, item, setExpiring }) {
       </div>
     </Dialog>
   )
+}
+
+Modal.propTypes = {
+  open: PropTypes.bool,
+  setOpen: PropTypes.bool,
+  item: PropTypes.array,
+  setExpiring: PropTypes.array
 }

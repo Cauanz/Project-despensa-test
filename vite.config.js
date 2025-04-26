@@ -1,12 +1,21 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
+import mkcert from 'vite-plugin-mkcert';
+import eslintPlugin from 'vite-plugin-eslint'
 // import fs from 'fs';
 // import path from 'path';
-import mkcert from 'vite-plugin-mkcert';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), mkcert()],
+  plugins: [
+    react(),
+    eslintPlugin({
+      cache: false,
+      include: ['./src/**/*.js', './src/**/*.jsx'],
+      exclude: [],
+    }), 
+    mkcert()
+  ],
   // server: {
   //   https: true
   // }

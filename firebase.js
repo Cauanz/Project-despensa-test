@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-   apiKey: "AIzaSyCS63VThfFFU4N3O7QUuzWqWNzxuInWoUc",
-   authDomain: "food-manager-b7ca2.firebaseapp.com",
-   projectId: "food-manager-b7ca2",
-   storageBucket: "food-manager-b7ca2.firebasestorage.app",
-   messagingSenderId: "242396795795",
-   appId: "1:242396795795:web:23d1a5fe84bab63d8ece66"
+   apiKey: import.meta.env.VITE_firebase_api_key,
+   authDomain: import.meta.env.VITE_firebase_auth_domain,
+   projectId: import.meta.env.VITE_firebase_project_id,
+   storageBucket: import.meta.env.VITE_firebase_storage_bucket,
+   messagingSenderId: import.meta.env.VITE_firebase_messaging_sender_id,
+   appId: import.meta.env.VITE_firebase_app_id
 };
 
 const app = initializeApp(firebaseConfig);
