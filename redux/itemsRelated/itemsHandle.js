@@ -1,173 +1,182 @@
-import dayjs from 'dayjs';
-import { db } from '../../firebase';
-import { addDoc, collection, deleteDoc, getDocs, doc, getDoc, updateDoc, query } from 'firebase/firestore';
-import { doneSuccess, getError, getRequest } from './itemsSlice';
-
-//TODO - ATUALIZADOR DE ESTADO (DISPATCH SEI LÁ) NÃO ESTÁ FUNCIONANDO, FUNÇÕES NÃO SÃO NEM MESMO CHAMADAS
+import dayjs from "dayjs";
+import { db } from "../../firebase";
+import { addDoc, collection, deleteDoc, getDocs, doc, getDoc, updateDoc, query } from "firebase/firestore";
+import { doneSuccess, getError, getFailed, getRequest } from "./itemsSlice";
+import {
+	setName,
+	setMarca,
+	setCodigo,
+	setImagem,
+	setAltImagem,
+	setId,
+	setError,
+	toggleForm,
+} from "../../redux/itemsRelated/formSlice";
 
 export const removeProduct = (setExpiring, id, quantity) => async (dispatch) => {
-  try {
-    const itemRef = doc(db, 'items', id);
-    const itemSnap = await getDoc(itemRef);
+	try {
+		const itemRef = doc(db, "items", id);
+		const itemSnap = await getDoc(itemRef);
 
-    console.log('ESTÁ FUNCIONANDO');
+		if (itemSnap.data().quantidade > 1) {
+			const newQuantity = itemSnap.data().quantidade - quantity;
 
-    if(itemSnap.data().quantidade > 1) {
-      const newQuantity = itemSnap.data().quantidade - quantity;
+			if (newQuantity <= 0) {
+				await deleteDoc(doc(db, "items", id));
+				dispatch(fetchItems());
+				return;
+			}
 
-      if(newQuantity <= 0) {
-        console.log('PASSOU POR AQUI');
-        await deleteDoc(doc(db, "items", id));
-        dispatch(fetchItems());
-        return;
-      }
+			await updateDoc(doc(db, "items", id), {
+				quantidade: String(newQuantity),
+			});
+			dispatch(fetchItems());
+			return;
+		}
 
-      await updateDoc(doc(db, "items", id), {
-        quantidade: String(newQuantity)
-      })
-      console.log('CHEGOU AQUI');
-      dispatch(fetchItems());
-      return;
-    }
+		await deleteDoc(doc(db, "items", id));
+		console.log(`Produto ${id} Deletado com sucesso`);
 
-    await deleteDoc(doc(db, "items", id));
+		setExpiring((prev) => prev.filter((product) => product._id !== id));
+		dispatch(fetchItems());
+	} catch (error) {
+		console.log("Erro ao remover o item", error);
+	}
+};
 
-    console.log(`Produto ${id} Deletado com sucesso`)
-    
-    setExpiring(prev => prev.filter(product => product._id !== id));
-    dispatch(fetchItems());
-  } catch (error) {
-    console.log("Erro ao remover o item", error)
-  }
-}
+export const fetchProduct = () => async (dispatch, getState) => {
+	const state = getState();
+	const { name, marca, codigo } = state.form;
 
-export async function fetchProduct(codigo, name, marca, setMarca, setName, setCodigo, setId, setImagem, setAltImagem, setError) {
-  const url = `https://world.openfoodfacts.org/api/v0/product/${codigo}.json`;
+	console.log(name, marca, codigo);
 
-  console.log(codigo, name, marca);
+	const url = `https://world.openfoodfacts.org/api/v0/product/${codigo}.json`;
 
-  if(codigo === ''){
-    return null;
-  }
+	if (codigo === "") {
+		return null;
+	}
 
-  try {
-    let response = await fetch(url);
-    if (!response.ok) {
-      console.error('A requisição falhou');
-      return;
-    }
-    
-    let data = await response.json();
-    if (!data || !data.product) {
-      setError("Produto não encontrado");
-      return;
-    }
+	try {
+		let response = await fetch(url);
+		if (!response.ok) {
+			dispatch(getFailed("A requisição falhou"));
+			console.error("A requisição falhou");
+			return;
+		}
 
-    // console.log(data.product);
-    let product = data.product;
+		let data = await response.json();
+		if (!data || !data.product) {
+			dispatch(setError("Produto não encontrado"));
+			return;
+		}
 
-    if(marca === '') {
-      setMarca(product.brands || '');
-    }
+		// console.log(data.product);
+		let product = data.product;
 
-    if(name === '') {
-      setName(product.product_name || '')
-    }
+		if (marca === "") {
+			dispatch(setMarca(product.brands || ""));
+		}
 
-    setCodigo(product.code || codigo);
-    setId(product._id || codigo);
-    setImagem(product.image_url || '');
-    setAltImagem(product.product_name || '');
+		if (name === "") {
+			dispatch(setName(product.product_name || ""));
+		}
 
-  } catch (error) {
-    console.error("Erro na requisição: ", error);
-  }
-}
+		dispatch(setCodigo(product.code || codigo));
+		dispatch(setId(product._id || codigo));
+		dispatch(setImagem(product.image_url || ""));
+		dispatch(setAltImagem(product.product_name || ""));
+	} catch (error) {
+		console.error("Erro na requisição: ", error);
+	}
+};
 
-export async function addItem(e, id, validade, marca, name, quantidade, imagem, altimagem, codigo, toggleForm) {
-  e.preventDefault();
+export const addItem = (e) => async (dispatch, getState) => {
+	const state = getState();
+	dispatch(getRequest());
+	e.preventDefault();
 
-  const item = {
-    "id": id,
-    "name": name,
-    "validade": validade,
-    "marca": marca,
-    "quantidade": quantidade,
-    "imagem": imagem,
-    "alt": altimagem,
-    "codigo": codigo
-  };
-  
-  //*FILTRA SE JÁ EXISTE
-  //TODO DEVERIA INCREMENTAR SE JÁ EXISTE, NÃO DIZER QUE JÁ EXISTE E É ISSO.
-  const items = await getDocs(collection(db, 'items'));
+	const { id, validade, name, marca, quantidade, codigo, imagem, altimagem } = state.form;
 
-  for(const food of items.docs) {
-    // console.log(food.data())
-    if(food.data().id === id) {
+	const item = {
+		id: id,
+		name: name,
+		validade: validade,
+		marca: marca,
+		quantidade: quantidade,
+		imagem: imagem,
+		alt: altimagem,
+		codigo: codigo,
+	};
 
-      const foodRef = doc(db, "items", food.id);
-      // const foodDoc = await getDoc(foodRef);
+	console.log(item);
 
-      const updatedQuantidade = parseInt(food.data().quantidade) + parseInt(quantidade);
+	//*FILTRA SE JÁ EXISTE
+	//TODO DEVERIA INCREMENTAR SE JÁ EXISTE, NÃO DIZER QUE JÁ EXISTE E É ISSO.
+	const itemsRef = collection(db, "items");
+	const items = await getDocs(itemsRef);
 
-      await updateDoc(foodRef, {
-        quantidade: String(updatedQuantidade)
-      });
+	for (const food of items.docs) {
+		// console.log(food.data())
+		if (food.data().id === id) {
+			const foodRef = doc(itemsRef, food.id);
+			// const foodDoc = await getDoc(foodRef);
+			const updatedQuantidade = parseInt(food.data().quantidade) + parseInt(quantidade);
 
-      toggleForm();
-      fetchItems();
-      return;
-    }
-  }
+			await updateDoc(foodRef, {
+				quantidade: String(updatedQuantidade),
+			});
 
-  try {
-    const docRef = await addDoc(collection(db, 'items'), item);
-    console.log('Item adicionado com sucesso!', docRef.id);
+			dispatch(toggleForm());
+			dispatch(fetchItems());
+			return;
+		}
+	}
 
-    toggleForm();
-    fetchItems();
-  } catch (error) {
-    console.log("Houve um erro ao tentar adicionar o item ao banco de dados", error)
-  }
-}
+	try {
+		const docRef = await addDoc(collection(db, "items"), item);
+		console.log("Item adicionado com sucesso!", docRef.id);
+
+		dispatch(toggleForm());
+		dispatch(fetchItems());
+	} catch (error) {
+		console.log("Houve um erro ao tentar adicionar o item ao banco de dados", error);
+	}
+};
 
 export const fetchItems = () => async (dispatch) => {
-  dispatch(getRequest());
+	dispatch(getRequest());
 
-  try {
-    const itemsQuery = await query(collection(db, 'items'));
-    const itemsSnapshot = await getDocs(itemsQuery);
-    console.log(itemsSnapshot);
+	try {
+		const itemsQuery = await query(collection(db, "items"));
+		const itemsSnapshot = await getDocs(itemsQuery);
 
-    const itemsArray = itemsSnapshot.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
-    // console.log(query.docs.map(doc => console.log(doc.id))) //DEBUG
-    
-    dispatch(doneSuccess(itemsArray));
-    // setItems(itemsArray);
-  } catch (error) {
-    dispatch(getError("Erro ao recuperar dados", error));
-    console.log("Erro ao recuperar dados", error);
-  }
-}
+		const itemsArray = itemsSnapshot.docs.map((doc) => ({ _id: doc.id, ...doc.data() }));
+		// console.log(query.docs.map(doc => console.log(doc.id))) //DEBUG
+
+		dispatch(doneSuccess(itemsArray));
+		// setItems(itemsArray);
+	} catch (error) {
+		dispatch(getError("Erro ao recuperar dados", error));
+		console.log("Erro ao recuperar dados", error);
+	}
+};
 
 async function fetchExpiringDate(days) {
+	console.log(days);
 
-  console.log(days);
+	const ItemsRef = collection(db, "items");
+	const itemsQuery = await getDocs(ItemsRef);
 
-  const ItemsRef = collection(db, 'items');
-  const itemsQuery = await getDocs(ItemsRef);
+	const produtosVencidos = [];
 
-  const produtosVencidos = [];
+	itemsQuery.docs.map((item) => {
+		const itemData = item.data();
 
-  itemsQuery.docs.map((item) => {
-    const itemData = item.data();
-
-    if(dayjs(itemData.validade) < dayjs()){
-      produtosVencidos.push(itemData);
-    }
-  });
-  return produtosVencidos;
+		if (dayjs(itemData.validade) < dayjs()) {
+			produtosVencidos.push(itemData);
+		}
+	});
+	return produtosVencidos;
 }
 
-console.log(await fetchExpiringDate(7));
+await fetchExpiringDate(7);
