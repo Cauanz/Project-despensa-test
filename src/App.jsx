@@ -22,7 +22,7 @@ function App() {
 
 	useEffect(() => {
 		dispatch(fetchItems());
-	}, []);
+	}, [dispatch]);
 
 	useEffect(() => {
 		setExpiring(getExpiringItems(items, 7));
