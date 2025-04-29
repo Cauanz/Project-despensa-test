@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import NavBar from "./components/NavBar";
 import Form from "./components/Form";
-import { removeProduct, fetchItems } from "../redux/itemsRelated/itemsHandle";
+import { removeProduct, fetchItems, fetchExpiringDate } from "../redux/itemsRelated/itemsHandle";
 import Modal from "./components/Modal";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
@@ -14,7 +14,7 @@ function App() {
 	// const [notifications, setNotifications] = useState([]);
 	const [openModal, setOpenModal] = useState(false);
 	const [removeItem, setRemoveItem] = useState({});
-	const [expiring, setExpiring] = useState([]);
+	// const [expiring, setExpiring] = useState([]);
 
 	const { items } = useSelector((state) => state.items);
 
@@ -25,34 +25,35 @@ function App() {
 	}, [dispatch]);
 
 	useEffect(() => {
-		setExpiring(getExpiringItems(items, 7));
-	}, [items]);
-	//TODO - NÃO SEI OQUE É ESSA FUNÇÃO ABAIXO E NEM PORQUE EU CHAMO ACIMA, MAS ACHO QUE POSSO JOGAR ELA NO ITEMSHANDLE
-	const getExpiringItems = (items, days) => {
-		const today = new Date();
-		const day = new Date(today);
-		day.setDate(today.getDate() + days);
+		fetchExpiringDate(7);
+	}, []);
+	//TODO - FETCH DE ITENS VENCIDOS NÃO ESTÁ FUNCIONANDO
 
-		const expiringProducts = items.filter((item) => {
-			const validityDate = new Date(item.validade);
-			return validityDate <= day;
-		});
+	// const getExpiringItems = (items, days) => {
+	// 	const today = new Date();
+	// 	const day = new Date(today);
+	// 	day.setDate(today.getDate() + days);
 
-		return expiringProducts;
-	};
+	// 	const expiringProducts = items.filter((item) => {
+	// 		const validityDate = new Date(item.validade);
+	// 		return validityDate <= day;
+	// 	});
+
+	// 	return expiringProducts;
+	// };
 
 	const handleRemove = (item) => {
 		if (item.quantidade > 1) {
 			setRemoveItem(item);
 			setOpenModal(true);
 		} else {
-			removeProduct(setExpiring, item._id, 1);
+			removeProduct(item._id, 1);
 		}
 	};
 
 	return (
 		<>
-			<NavBar expiringItems={expiring} />
+			<NavBar />
 
 			<Form removeItem={removeProduct} />
 
@@ -60,7 +61,7 @@ function App() {
 				{/* <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">Itens na despensa</h2> */}
 				<div className="bg-white">
 					<div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-						<Modal open={openModal} setOpen={setOpenModal} item={removeItem} setExpiring={setExpiring} />
+						<Modal open={openModal} setOpen={setOpenModal} item={removeItem} />
 
 						<div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
 							{items.map((item) => (

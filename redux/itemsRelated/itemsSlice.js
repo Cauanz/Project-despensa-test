@@ -6,6 +6,7 @@ const initialState = {
 	response: null,
 	loading: false,
 	items: [],
+	expiredItems: [],
 };
 
 const itemsSlice = createSlice({
@@ -23,6 +24,9 @@ const itemsSlice = createSlice({
 		//     state.error = null;
 		//     state.response = null;
 		// },
+		setExpiringItems: (state, action) => {
+			state.expiredItems = action.payload;
+		},
 		getRequest: (state) => {
 			state.loading = true;
 		},
@@ -38,6 +42,6 @@ const itemsSlice = createSlice({
 	},
 });
 
-export const { doneSuccess, getRequest, getFailed, getError } = itemsSlice.actions;
+export const { doneSuccess, getRequest, getFailed, getError, setExpiringItems } = itemsSlice.actions;
 
 export default itemsSlice.reducer;

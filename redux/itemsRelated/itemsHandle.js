@@ -1,7 +1,8 @@
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
+import { isBefore } from "date-fns";
 import { db } from "../../firebase";
 import { addDoc, collection, deleteDoc, getDocs, doc, getDoc, updateDoc, query } from "firebase/firestore";
-import { doneSuccess, getError, getFailed, getRequest } from "./itemsSlice";
+import { doneSuccess, getError, getFailed, getRequest, setExpiringItems } from "./itemsSlice";
 import {
 	setName,
 	setMarca,
@@ -13,7 +14,7 @@ import {
 	toggleForm,
 } from "../../redux/itemsRelated/formSlice";
 
-export const removeProduct = (setExpiring, id, quantity) => async (dispatch) => {
+export const removeProduct = (id, quantity) => async (dispatch) => {
 	try {
 		const itemRef = doc(db, "items", id);
 		const itemSnap = await getDoc(itemRef);
@@ -37,7 +38,7 @@ export const removeProduct = (setExpiring, id, quantity) => async (dispatch) => 
 		await deleteDoc(doc(db, "items", id));
 		console.log(`Produto ${id} Deletado com sucesso`);
 
-		setExpiring((prev) => prev.filter((product) => product._id !== id));
+		dispatch(setExpiringItems((prev) => prev.filter((product) => product._id !== id)));
 		dispatch(fetchItems());
 	} catch (error) {
 		console.log("Erro ao remover o item", error);
@@ -47,8 +48,6 @@ export const removeProduct = (setExpiring, id, quantity) => async (dispatch) => 
 export const fetchProduct = () => async (dispatch, getState) => {
 	const state = getState();
 	const { name, marca, codigo } = state.form;
-
-	console.log(name, marca, codigo);
 
 	const url = `https://world.openfoodfacts.org/api/v0/product/${codigo}.json`;
 
@@ -92,7 +91,6 @@ export const fetchProduct = () => async (dispatch, getState) => {
 
 export const addItem = (e) => async (dispatch, getState) => {
 	const state = getState();
-	dispatch(getRequest());
 	e.preventDefault();
 
 	const { id, validade, name, marca, quantidade, codigo, imagem, altimagem } = state.form;
@@ -108,31 +106,27 @@ export const addItem = (e) => async (dispatch, getState) => {
 		codigo: codigo,
 	};
 
-	console.log(item);
-
-	//*FILTRA SE JÁ EXISTE
-	//TODO DEVERIA INCREMENTAR SE JÁ EXISTE, NÃO DIZER QUE JÁ EXISTE E É ISSO.
 	const itemsRef = collection(db, "items");
 	const items = await getDocs(itemsRef);
 
-	for (const food of items.docs) {
-		// console.log(food.data())
-		if (food.data().id === id) {
-			const foodRef = doc(itemsRef, food.id);
-			// const foodDoc = await getDoc(foodRef);
-			const updatedQuantidade = parseInt(food.data().quantidade) + parseInt(quantidade);
-
-			await updateDoc(foodRef, {
-				quantidade: String(updatedQuantidade),
-			});
-
-			dispatch(toggleForm());
-			dispatch(fetchItems());
-			return;
-		}
-	}
-
 	try {
+		for (const food of items.docs) {
+			// console.log(food.data())
+			if (food.data().id === id) {
+				const foodRef = doc(itemsRef, food.id);
+				// const foodDoc = await getDoc(foodRef);
+				const updatedQuantidade = parseInt(food.data().quantidade) + parseInt(quantidade);
+
+				await updateDoc(foodRef, {
+					quantidade: String(updatedQuantidade),
+				});
+
+				dispatch(toggleForm());
+				dispatch(fetchItems());
+				return;
+			}
+		}
+
 		const docRef = await addDoc(collection(db, "items"), item);
 		console.log("Item adicionado com sucesso!", docRef.id);
 
@@ -147,21 +141,20 @@ export const fetchItems = () => async (dispatch) => {
 	dispatch(getRequest());
 
 	try {
-		const itemsQuery = await query(collection(db, "items"));
+		const itemsQuery = query(collection(db, "items"));
 		const itemsSnapshot = await getDocs(itemsQuery);
 
 		const itemsArray = itemsSnapshot.docs.map((doc) => ({ _id: doc.id, ...doc.data() }));
 		// console.log(query.docs.map(doc => console.log(doc.id))) //DEBUG
 
 		dispatch(doneSuccess(itemsArray));
-		// setItems(itemsArray);
 	} catch (error) {
 		dispatch(getError("Erro ao recuperar dados", error));
 		console.log("Erro ao recuperar dados", error);
 	}
 };
 
-async function fetchExpiringDate(days) {
+export const fetchExpiringDate = (days) => async (dispatch) => {
 	console.log(days);
 
 	const ItemsRef = collection(db, "items");
@@ -171,12 +164,20 @@ async function fetchExpiringDate(days) {
 
 	itemsQuery.docs.map((item) => {
 		const itemData = item.data();
+		const itemDate = new Date(itemData.validade);
+		const today = new Date();
 
-		if (dayjs(itemData.validade) < dayjs()) {
+		if (isBefore(itemDate, today)) {
 			produtosVencidos.push(itemData);
 		}
-	});
-	return produtosVencidos;
-}
 
-await fetchExpiringDate(7);
+		// if (dayjs(itemData.validade) < dayjs().format("YYYY-MM-DD")) {
+		// 	produtosVencidos.push(itemData);
+		// }
+	});
+	console.log(produtosVencidos);
+	dispatch(setExpiringItems(produtosVencidos));
+	// return produtosVencidos;
+};
+
+fetchExpiringDate(7);

@@ -1,16 +1,17 @@
 /* eslint-disable react/prop-types */
 import "./NavBar.css";
-
 import { useState } from "react";
 import { Dialog, DialogPanel, Disclosure, PopoverGroup } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Menu, MenuButton, MenuItems } from "@headlessui/react";
 import { toggleOpen } from "../../redux/itemsRelated/formSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
-export default function NavBar({ expiringItems }) {
+export default function NavBar() {
 	const dispatch = useDispatch();
+
+	const { expiredItems } = useSelector((state) => state.items);
 
 	//  function classNames(...classes) {
 	//    return classes.filter(Boolean).join(' ')
@@ -28,9 +29,9 @@ export default function NavBar({ expiringItems }) {
 				<div className="flex lg:hidden">
 					<Menu as="div" className="relative inline-block text-left">
 						<div className="relative flex justify-center align-middle">
-							{expiringItems.length !== 0 && (
+							{expiredItems.length !== 0 && (
 								<div className="dot absolute bg-orange-500 w-5 h-5 rounded-xl text-center pointer-events-none">
-									{expiringItems.length}
+									{expiredItems.length}
 								</div>
 							)}
 							<MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-transparent mr-4">
@@ -56,7 +57,7 @@ export default function NavBar({ expiringItems }) {
 							className="absolute right-0 z-10 mt-2 min-w-96 max-w-lg origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
 						>
 							<div className="py-1">
-								{expiringItems.map((item) => (
+								{expiredItems.map((item) => (
 									<li key={item.id} className="flex justify-between gap-x-6 p-3 border-t border-b">
 										<div className="flex min-w-0 gap-x-4">
 											<img alt={item.alt} src={item.imagem} className="size-12 flex-none rounded-full bg-gray-50" />

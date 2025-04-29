@@ -14,13 +14,13 @@ import { removeProduct } from "../../redux/itemsRelated/itemsHandle";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 
-export default function Modal({ open, setOpen, item, setExpiring }) {
+export default function Modal({ open, setOpen, item }) {
 	const dispatch = useDispatch();
 
 	const [selectedItems, setSelectedItems] = useState(0);
 
 	const handleSubmit = () => {
-		dispatch(removeProduct(setExpiring, item._id, selectedItems));
+		dispatch(removeProduct(item._id, selectedItems));
 		setOpen(false);
 	};
 
