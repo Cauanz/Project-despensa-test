@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import "./NavBar.css";
 import { useState } from "react";
 import { Dialog, DialogPanel, Disclosure, PopoverGroup } from "@headlessui/react";
