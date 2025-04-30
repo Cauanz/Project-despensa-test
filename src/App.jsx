@@ -28,7 +28,7 @@ function App() {
 
 	useEffect(() => {
 		dispatch(fetchExpiringDate(7));
-	}, []);
+	}, [dispatch]);
 
 	// const getExpiringItems = (items, days) => {
 	// 	const today = new Date();
