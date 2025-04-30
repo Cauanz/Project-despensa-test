@@ -27,6 +27,9 @@ const itemsSlice = createSlice({
 		setExpiringItems: (state, action) => {
 			state.expiredItems = action.payload;
 		},
+		removeExpiredItem: (state, action) => {
+			state.expiredItems = state.expiredItems.filter((item) => item._id !== action.payload);
+		},
 		getRequest: (state) => {
 			state.loading = true;
 		},
@@ -42,6 +45,6 @@ const itemsSlice = createSlice({
 	},
 });
 
-export const { doneSuccess, getRequest, getFailed, getError, setExpiringItems } = itemsSlice.actions;
+export const { doneSuccess, getRequest, getFailed, getError, setExpiringItems, removeExpiredItem } = itemsSlice.actions;
 
 export default itemsSlice.reducer;

@@ -2,7 +2,7 @@
 import { isBefore } from "date-fns";
 import { db } from "../../firebase";
 import { addDoc, collection, deleteDoc, getDocs, doc, getDoc, updateDoc, query } from "firebase/firestore";
-import { doneSuccess, getError, getFailed, getRequest, setExpiringItems } from "./itemsSlice";
+import { doneSuccess, getError, getFailed, getRequest, removeExpiredItem, setExpiringItems } from "./itemsSlice";
 import {
 	setName,
 	setMarca,
@@ -25,6 +25,7 @@ export const removeProduct = (id, quantity) => async (dispatch) => {
 			if (newQuantity <= 0) {
 				await deleteDoc(doc(db, "items", id));
 				dispatch(fetchItems());
+				dispatch(removeExpiredItem(id));
 				return;
 			}
 
@@ -38,7 +39,7 @@ export const removeProduct = (id, quantity) => async (dispatch) => {
 		await deleteDoc(doc(db, "items", id));
 		console.log(`Produto ${id} Deletado com sucesso`);
 
-		dispatch(setExpiringItems((prev) => prev.filter((product) => product._id !== id)));
+		dispatch(removeExpiredItem(id));
 		dispatch(fetchItems());
 	} catch (error) {
 		console.log("Erro ao remover o item", error);

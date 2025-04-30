@@ -18,16 +18,17 @@ function App() {
 
 	const { items } = useSelector((state) => state.items);
 
-	//TODO TALVEZ TERIA QUE CRIAR UM REGISTRO MAIS ROBUSTO DE CADA ITEM DO DB PARA PODER ADICIONAR FUNÇÕES MAIS AVANÇADAS OU MAIS TRABALHADAS, TIPO VALIDADE, MULTIPLOS ITENS COM DATA DE VALIDADE DIFERENTES EM ARRAY ETC.
+	//* TALVEZ TERIA QUE CRIAR UM REGISTRO MAIS ROBUSTO DE CADA ITEM DO DB PARA PODER ADICIONAR FUNÇÕES MAIS AVANÇADAS OU MAIS TRABALHADAS, TIPO VALIDADE, MULTIPLOS ITENS COM DATA DE VALIDADE DIFERENTES EM ARRAY ETC.
+
+	//TODO - TUDO ESTÁ "PRONTO", REFATORAR UI COM UMA UILIB NOVA COMO CHAKRA OU ANT DESIGN E FINALIZAR
 
 	useEffect(() => {
 		dispatch(fetchItems());
 	}, [dispatch]);
 
 	useEffect(() => {
-		fetchExpiringDate(7);
+		dispatch(fetchExpiringDate(7));
 	}, []);
-	//TODO - FETCH DE ITENS VENCIDOS NÃO ESTÁ FUNCIONANDO
 
 	// const getExpiringItems = (items, days) => {
 	// 	const today = new Date();
@@ -47,7 +48,7 @@ function App() {
 			setRemoveItem(item);
 			setOpenModal(true);
 		} else {
-			removeProduct(item._id, 1);
+			dispatch(removeProduct(item._id, 1));
 		}
 	};
 
@@ -58,7 +59,6 @@ function App() {
 			<Form removeItem={removeProduct} />
 
 			<div className="list">
-				{/* <h2 className="text-2xl text-center font-bold tracking-tight text-gray-900">Itens na despensa</h2> */}
 				<div className="bg-white">
 					<div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
 						<Modal open={openModal} setOpen={setOpenModal} item={removeItem} />
@@ -94,7 +94,6 @@ function App() {
 									>
 										Remover
 									</button>
-									{/* <button type='button' title='Remover' className='relative bg-red-600 p-2 rounded-lg' onClick={() => removeProduct(setExpiring, item._id)}>Remover</button> */}
 								</div>
 							))}
 						</div>
