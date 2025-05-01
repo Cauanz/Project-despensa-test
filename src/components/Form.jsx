@@ -126,36 +126,7 @@ export default function Form({ error }) {
 											<label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
 												Código de barras
 											</label>
-											<div className="mt-2 flex items-center gap-x-3 h-6">
-												{/* <button
-                                    type="button"
-                                    disabled={true} //TEMPORARIO ATÉ ARRUMAR LEITORES DE CÓDIGO QUE FUNCIONEM
-                                    onClick={() => setIsScanning(true)}
-                                    className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 absolute">
-                                    Adicionar
-                                 </button>
-
-                                 { isScanning && (
-                                    <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50" onClick={() => setIsScanning(false)}>
-                                       <div className="modal h-96 w-96 overflow-auto">
-                                          <div className="item flex justify-center items-center h-full">
-
-                                             {/* //TODO - Leitores de código de barra usando a camera estão quebrados, nenhum que achei é facil de implementar ou não vale a pena tentar
-
-                                             {/* //* por enquanto somente por entrada manual
-
-                                             <BarcodeScanner 
-                                                width={300}
-                                                height={300}
-                                                value={codigo}
-                                                onCapture={() => {handleScan(), setIsScanning(false)}}
-                                             />
-
-                                          </div>
-                                       </div>
-                                 </div>
-                                 )} */}
-											</div>
+											<div className="mt-2 flex items-center gap-x-3 h-6"></div>
 											<div>
 												<label htmlFor="bar-code" className="mt-1 text-sm leading-6 text-gray-600">
 													Ou adicione manualmente
