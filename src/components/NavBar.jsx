@@ -10,13 +10,13 @@ import {
 	DrawerBody,
 	DrawerCloseButton,
 	DrawerContent,
-	DrawerFooter,
-	DrawerHeader,
+	// DrawerFooter,
 	DrawerOverlay,
 	Flex,
 	HStack,
+	// Icon,
 	IconButton,
-	Input,
+	Image,
 	Popover,
 	PopoverArrow,
 	PopoverBody,
@@ -31,7 +31,7 @@ import {
 	// MenuList,
 	Stack,
 } from "@chakra-ui/react";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { HiMenuAlt1, HiOutlineX, HiBell } from "react-icons/hi";
 // import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 export default function NavBar() {
@@ -53,7 +53,7 @@ export default function NavBar() {
 				<Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
 					<IconButton
 						size={"md"}
-						icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+						icon={isOpen ? <HiOutlineX /> : <HiMenuAlt1 />}
 						aria-label={"Open Menu"}
 						display={{ md: "none" }}
 						onClick={() => setIsOpen(!isOpen)}
@@ -61,39 +61,7 @@ export default function NavBar() {
 					<HStack spacing={8} alignItems={"center"}>
 						<Box>Itens na Despensa</Box>
 					</HStack>
-					{/* <Flex alignItems={"center"}>
-						<Menu>
-							<MenuButton as={Button} rounded={"full"} variant={"link"} cursor={"pointer"} minW={0}>
-								<Avatar
-									size={"sm"}
-									src={
-										"https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-									}
-								/>
-							</MenuButton>
-							<MenuList>
-								<MenuItem>Link 1</MenuItem>
-								<MenuItem>Link 2</MenuItem>
-								<MenuDivider />
-								<MenuItem>Link 3</MenuItem>
-							</MenuList>
-						</Menu>
-					</Flex> */}
 				</Flex>
-
-				<Popover>
-					<PopoverTrigger>
-						<Button>Trigger</Button>
-					</PopoverTrigger>
-					<PopoverContent>
-						<PopoverArrow />
-						<PopoverCloseButton />
-						<PopoverHeader>Itens Expirados!</PopoverHeader>
-						{expiredItems.map((item) => {
-							<PopoverBody>{item.name}</PopoverBody>;
-						})}
-					</PopoverContent>
-				</Popover>
 
 				{isOpen ? (
 					<Box pb={4} display={{ md: "none" }}>
@@ -105,25 +73,50 @@ export default function NavBar() {
 					</Box>
 				) : null}
 
+				<Popover>
+					{expiredItems.length !== 0 && (
+						<div className="dot absolute bg-orange-500 w-5 h-5 rounded-xl text-center pointer-events-none">
+							{expiredItems.length}
+						</div>
+					)}
+					<PopoverTrigger>
+						<Button variant="outline">
+							<HiBell />
+						</Button>
+					</PopoverTrigger>
+					<PopoverContent>
+						<PopoverArrow />
+						<PopoverCloseButton />
+						<PopoverHeader>Itens Expirados!</PopoverHeader>
+						{expiredItems.map((item) => (
+							<>
+								<PopoverBody key={item.id} display="flex">
+									<Image rounded="md" boxSize="60px" borderRadius="full" src={item.imagem} />
+									{item.name}
+								</PopoverBody>
+							</>
+						))}
+					</PopoverContent>
+				</Popover>
+
 				<Button ref={btnRef} colorScheme="teal" onClick={() => setMobileMenuOpen(true)}>
-					Open
+					<HiMenuAlt1 />
 				</Button>
 				<Drawer isOpen={mobileMenuOpen} placement="right" onClose={setMobileMenuOpen} finalFocusRef={btnRef}>
 					<DrawerOverlay />
 					<DrawerContent>
 						<DrawerCloseButton />
-						<DrawerHeader>Create your account</DrawerHeader>
 
 						<DrawerBody>
-							<Input placeholder="Type here..." />
+							<Button onClick={() => dispatch(toggleOpen(), setMobileMenuOpen(false))}>Adicionar item</Button>
 						</DrawerBody>
 
-						<DrawerFooter>
+						{/* <DrawerFooter>
 							<Button variant="outline" mr={3} onClick={() => setMobileMenuOpen(false)}>
 								Cancel
 							</Button>
 							<Button colorScheme="blue">Save</Button>
-						</DrawerFooter>
+						</DrawerFooter> */}
 					</DrawerContent>
 				</Drawer>
 			</Box>
