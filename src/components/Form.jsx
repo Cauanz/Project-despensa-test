@@ -126,11 +126,7 @@ export default function Form({ error }) {
 											<label htmlFor="photo" className="block text-sm font-medium leading-6 text-gray-900">
 												Código de barras
 											</label>
-											<div className="mt-2 flex items-center gap-x-3 h-6"></div>
 											<div>
-												<label htmlFor="bar-code" className="mt-1 text-sm leading-6 text-gray-600">
-													Ou adicione manualmente
-												</label>
 												<div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
 													<input
 														type="number"
@@ -156,14 +152,14 @@ export default function Form({ error }) {
 									className="text-sm font-semibold leading-6 text-gray-900"
 									onClick={() => dispatch(toggleForm())}
 								>
-									Cancel
+									Cancelar
 								</button>
 								<button
 									type="submit"
-									className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+									className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
 									onClick={(e) => handleData(e)}
 								>
-									Save
+									Adicionar
 								</button>
 							</div>
 						</form>

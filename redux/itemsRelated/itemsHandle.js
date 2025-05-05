@@ -18,7 +18,6 @@ export const removeProduct = (id, quantity) => async (dispatch) => {
 	try {
 		const itemRef = doc(db, "items", id);
 		const itemSnap = await getDoc(itemRef);
-
 		if (itemSnap.data().quantidade > 1) {
 			const newQuantity = itemSnap.data().quantidade - quantity;
 

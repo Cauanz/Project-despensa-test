@@ -93,7 +93,7 @@ function App() {
 											<Divider />
 											<CardFooter>
 												<ButtonGroup spacing="2">
-													<Button variant="outline" onClick={handleRemove} colorScheme="red">
+													<Button variant="outline" onClick={() => handleRemove(item)} colorScheme="red">
 														Remover
 													</Button>
 												</ButtonGroup>
