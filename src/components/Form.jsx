@@ -2,7 +2,6 @@ import "./Form.css";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { addItem, fetchProduct } from "../../redux/itemsRelated/itemsHandle";
 import PropTypes from "prop-types";
-// import { BarcodeScanner } from 'react-barcode-scanner';
 import { useDispatch, useSelector } from "react-redux";
 import {
 	setName,

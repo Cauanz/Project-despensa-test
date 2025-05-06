@@ -23,17 +23,12 @@ import { useSelector } from "react-redux";
 function App() {
 	const dispatch = useDispatch();
 
-	// const [isScanning, setIsScanning] = useState(false);
-	// const [notifications, setNotifications] = useState([]);
 	const [openModal, setOpenModal] = useState(false);
 	const [removeItem, setRemoveItem] = useState({});
-	// const [expiring, setExpiring] = useState([]);
 
 	const { items } = useSelector((state) => state.items);
 
 	//* TALVEZ TERIA QUE CRIAR UM REGISTRO MAIS ROBUSTO DE CADA ITEM DO DB PARA PODER ADICIONAR FUNÇÕES MAIS AVANÇADAS OU MAIS TRABALHADAS, TIPO VALIDADE, MULTIPLOS ITENS COM DATA DE VALIDADE DIFERENTES EM ARRAY ETC.
-
-	//TODO - TUDO ESTÁ "PRONTO", REFATORAR UI COM UMA UILIB NOVA COMO CHAKRA OU ANT DESIGN E FINALIZAR
 
 	useEffect(() => {
 		dispatch(fetchItems());
@@ -42,19 +37,6 @@ function App() {
 	useEffect(() => {
 		dispatch(fetchExpiringDate(7));
 	}, [dispatch]);
-
-	// const getExpiringItems = (items, days) => {
-	// 	const today = new Date();
-	// 	const day = new Date(today);
-	// 	day.setDate(today.getDate() + days);
-
-	// 	const expiringProducts = items.filter((item) => {
-	// 		const validityDate = new Date(item.validade);
-	// 		return validityDate <= day;
-	// 	});
-
-	// 	return expiringProducts;
-	// };
 
 	const handleRemove = (item) => {
 		if (item.quantidade > 1) {

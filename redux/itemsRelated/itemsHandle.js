@@ -1,4 +1,3 @@
-// import dayjs from "dayjs";
 import { isBefore } from "date-fns";
 import { db } from "../../firebase";
 import { addDoc, collection, deleteDoc, getDocs, doc, getDoc, updateDoc, query } from "firebase/firestore";
@@ -69,7 +68,6 @@ export const fetchProduct = () => async (dispatch, getState) => {
 			return;
 		}
 
-		// console.log(data.product);
 		let product = data.product;
 
 		if (marca === "") {
@@ -111,10 +109,9 @@ export const addItem = (e) => async (dispatch, getState) => {
 
 	try {
 		for (const food of items.docs) {
-			// console.log(food.data())
 			if (food.data().id === id) {
 				const foodRef = doc(itemsRef, food.id);
-				// const foodDoc = await getDoc(foodRef);
+
 				const updatedQuantidade = parseInt(food.data().quantidade) + parseInt(quantidade);
 
 				await updateDoc(foodRef, {
@@ -145,7 +142,6 @@ export const fetchItems = () => async (dispatch) => {
 		const itemsSnapshot = await getDocs(itemsQuery);
 
 		const itemsArray = itemsSnapshot.docs.map((doc) => ({ _id: doc.id, ...doc.data() }));
-		// console.log(query.docs.map(doc => console.log(doc.id))) //DEBUG
 
 		dispatch(doneSuccess(itemsArray));
 	} catch (error) {
@@ -156,7 +152,7 @@ export const fetchItems = () => async (dispatch) => {
 
 export const fetchExpiringDate = (days) => async (dispatch) => {
 	console.log(days);
-
+	//TODO - ADICIONAR PRODUTOS PRÓXIMOS DA DATA DE VALIDADE EX: EM 7 DIAS, PRÓXIMA SEMANA ETC...
 	const ItemsRef = collection(db, "items");
 	const itemsQuery = await getDocs(ItemsRef);
 
@@ -170,14 +166,9 @@ export const fetchExpiringDate = (days) => async (dispatch) => {
 		if (isBefore(itemDate, today)) {
 			produtosVencidos.push(itemData);
 		}
-
-		// if (dayjs(itemData.validade) < dayjs().format("YYYY-MM-DD")) {
-		// 	produtosVencidos.push(itemData);
-		// }
 	});
 	console.log(produtosVencidos);
 	dispatch(setExpiringItems(produtosVencidos));
-	// return produtosVencidos;
 };
 
 fetchExpiringDate(7);

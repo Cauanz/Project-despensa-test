@@ -1,27 +1,20 @@
-import "./NavBar.css";
 import { useRef } from "react";
 import { toggleOpen } from "../../redux/itemsRelated/formSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
-	// Avatar,
 	Box,
 	Button,
 	Drawer,
 	DrawerBody,
 	DrawerCloseButton,
 	DrawerContent,
-	// DrawerFooter,
 	DrawerOverlay,
 	Flex,
 	HStack,
-	// Icon,
 	IconButton,
 	Image,
 	Menu,
-	// MenuButton,
 	MenuDivider,
-	// MenuItem,
-	// MenuList,
 	Popover,
 	PopoverArrow,
 	PopoverBody,
@@ -29,12 +22,6 @@ import {
 	PopoverContent,
 	PopoverHeader,
 	PopoverTrigger,
-	// Menu,
-	// MenuButton,
-	// MenuDivider,
-	// MenuItem,
-	// MenuList,
-	// Stack,
 	useDisclosure,
 } from "@chakra-ui/react";
 import { HiMenuAlt1, HiOutlineX, HiBell } from "react-icons/hi";
@@ -43,11 +30,8 @@ export default function NavBar() {
 	const dispatch = useDispatch();
 
 	const { expiredItems } = useSelector((state) => state.items);
-	const btnRef = useRef();
-
-	// const [isOpen, setIsOpen] = useState(false);
-	// const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const btnRef = useRef();
 
 	return (
 		<>
@@ -61,7 +45,7 @@ export default function NavBar() {
 						onClick={isOpen ? onClose : onOpen}
 					/>
 					<HStack spacing={8} alignItems={"center"}>
-						<Box>Itens na despensa</Box>
+						<Box fontSize={23}>Itens na despensa</Box>
 						<HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}></HStack>
 					</HStack>
 					<Flex alignItems={"center"}>
