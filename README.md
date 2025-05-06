@@ -1,8 +1,10 @@
-# React + Vite
+# Projeto de gerenciamento de armazém de alimentos (nome bonito)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Esse projeto é algo que fiz para registrar e monitorar alimentos armazenados.
 
-Currently, two official plugins are available:
+Atualmente foi refatorado e está fechado sem previsões de mudanças.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Feito usando:
+React + Firebase
+Redux
+Tailwindcss + Chakra UI
